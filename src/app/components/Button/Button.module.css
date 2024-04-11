@@ -1,12 +1,15 @@
 .Button {
-  border-radius: 40px;
-  background: #b7e5ff;
-  box-shadow: 7px 8px 4px 0px rgba(0, 0, 0, 0.25);
-  padding: 20px 50px;
-  text-align: center;
-  justify-items: center;
+  color: var(--textColor);
+  font-weight: bold;
+  border: none;
+  background-color: var(--earnColor);
+  padding: 10px 20px;
+}
+
+.UseColor {
 }
 
 .Button:hover {
-  background: rgb(156, 179, 230);
+  background-color: var(--earnColorHover);
+  cursor: pointer;
 }

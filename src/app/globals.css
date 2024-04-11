@@ -3,12 +3,15 @@
   --textColor: #ffffff;
 
   --earnColor: #433c95;
+  --earnColorHover: #5f5a5a;
+  --modalColor: #3f221a;
 }
 
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  font-size: 1em;
 }
 
 body {
@@ -23,4 +26,26 @@ body {
   background-color: var(--earnColor);
   padding: 10px 20px;
   justify-self: end;
+}
+.earnButton:hover {
+  background-color: var(--earnColorHover);
+  cursor: pointer;
+}
+
+.modalContainer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  align-content: center;
+  backdrop-filter: blur(5px);
+}
+
+.modalDiv {
+  background-color: var(--modalColor);
+  padding: 20px 40px;
+  margin: auto;
+  width: 30%;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
 }

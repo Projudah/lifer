@@ -1,11 +1,24 @@
 'use client'
 import { useRouter } from "next/navigation";
 import Layout from "../components/Layout/Layout";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import Modal from "../components/Modal";
+import { PointsContext } from "../dataContext";
+import Button from "../components/Button/Button";
+
+type Task = {
+    id: string;
+    title: string;
+    timeChunksRequired: number;
+}
+
 
 export default function Earn() {
     const router = useRouter();
     const [data, setData] = useState<any>();
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalData, setModalData] = useState<string>('');
+    const points = useContext(PointsContext);
 
     const getData = async () => {
         const res = await fetch('earn/api', {
@@ -23,21 +36,61 @@ export default function Earn() {
 
     const handleGoBack = () => router.push("/");
 
-    if (!data) return <div>loading</div>
+    const updatePoints = async (newPoints: string) => {
+        const newTotal = parseInt(newPoints) + parseInt(points);
+        const res = await fetch('api/points', {
+            method: 'POST',
+            body: JSON.stringify({ points: newTotal }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!res.ok) {
+            setModalData('Error updating points');
+            return;
+        }
+        setModalData('You now have ' + newTotal + ' points!');
+    };
 
-    const tasksMarkup = data.map((task: any, index: any) => {
+    const handleEarnClick = async (task: Task) => {
+        setModalData(`Earning ${task.timeChunksRequired} points...`);
+        setModalOpen(true);
+        const res = await fetch('earn/api', {
+            method: 'POST',
+            body: JSON.stringify({ id: task.id }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!res.ok) {
+            setModalData('Error completing task');
+            return;
+        }
+        await updatePoints(task.timeChunksRequired.toString());
+    }
+
+    const handleModalClose = () => {
+        window.location.reload();
+    }
+
+    if (!data || !points) return <div>loading</div>
+
+    const tasksMarkup = data.map((task: Task, index: number) => {
         const taskName = task.title;
         const taskPoints = task.timeChunksRequired;
 
         return <Layout key={index} horizontal left>
-            <button className="earnButton" onClick={() => { }}>{taskPoints} pts</button>
+            <button className="earnButton" onClick={() => handleEarnClick(task)}>{taskPoints} pts</button>
             <div>{taskName}</div>
         </Layout>
     });
 
-    return <Layout>
-        <h1>Earn</h1>
-        {tasksMarkup}
-        <button onClick={handleGoBack}>Go back</button>
-    </Layout>
+    return <>
+        <Layout>
+            <h1>Earn</h1>
+            <Button label="Go back" onAction={handleGoBack} />
+            {tasksMarkup}
+        </Layout>
+        <Modal open={modalOpen} title="Earn" onClose={handleModalClose}>{modalData}</Modal>
+    </>
 }
