@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function Earn() {
     const router = useRouter();
-    const [data, setData] = useState(null);
+    const [data, setData] = useState<any>();
 
     const getData = async () => {
         const res = await fetch('earn/api', {
