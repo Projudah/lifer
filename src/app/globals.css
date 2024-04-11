@@ -46,6 +46,6 @@ body {
   background-color: var(--modalColor);
   padding: 20px 40px;
   margin: auto;
-  width: 30%;
+  width: 50%;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
 }

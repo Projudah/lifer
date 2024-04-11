@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import Modal from "../components/Modal";
 import { PointsContext } from "../dataContext";
 import Button from "../components/Button/Button";
+import { Action } from "../components/Modal/Modal";
 
 type Task = {
     id: string;
@@ -18,6 +19,7 @@ export default function Earn() {
     const [data, setData] = useState<any>();
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState<string>('');
+    const [modalAction, setModalAction] = useState<Action>();
     const points = useContext(PointsContext);
 
     const getData = async () => {
@@ -52,9 +54,9 @@ export default function Earn() {
         setModalData('You now have ' + newTotal + ' points!');
     };
 
-    const handleEarnClick = async (task: Task) => {
+    const completeTask = async (task: Task) => {
         setModalData(`Earning ${task.timeChunksRequired} points...`);
-        setModalOpen(true);
+
         const res = await fetch('earn/api', {
             method: 'POST',
             body: JSON.stringify({ id: task.id }),
@@ -67,6 +69,12 @@ export default function Earn() {
             return;
         }
         await updatePoints(task.timeChunksRequired.toString());
+    };
+
+    const handleEarnClick = async (task: Task) => {
+        setModalData(`Complete task "${task.title}" for ${task.timeChunksRequired} points?`);
+        setModalAction({ label: 'Complete', onAction: () => completeTask(task) });
+        setModalOpen(true);
     }
 
     const handleModalClose = () => {
@@ -91,6 +99,6 @@ export default function Earn() {
             <Button label="Go back" onAction={handleGoBack} />
             {tasksMarkup}
         </Layout>
-        <Modal open={modalOpen} title="Earn" onClose={handleModalClose}>{modalData}</Modal>
+        <Modal open={modalOpen} title="Earn" onClose={handleModalClose} secondaryAction={modalAction}>{modalData}</Modal>
     </>
 }
