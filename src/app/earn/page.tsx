@@ -25,7 +25,7 @@ export default function Earn() {
 
     if (!data) return <div>loading</div>
 
-    const tasksMarkup = data.map((task, index) => {
+    const tasksMarkup = data.map((task: any, index: any) => {
         const taskName = task.title;
         const taskPoints = task.timeChunksRequired;
 
