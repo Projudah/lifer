@@ -3,11 +3,28 @@
 import { useRouter } from "next/navigation";
 import Button from "./components/Button/Button";
 import Layout from "./components/Layout/Layout";
-import styles from "./page.module.css";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const router = useRouter();
-  const pointsMarkup = <h1>12 pts</h1>
+  const [points, setPoints] = useState<string>();
+
+  const getPoints = async () => {
+    const res = await fetch("api/points", {
+      method: "GET",
+    });
+    const data = await res.json();
+    setPoints(data);
+  };
+
+  useEffect(() => {
+    if (!points) {
+      getPoints();
+    }
+  }, [points]);
+
+
+  const pointsMarkup = <h1>{points ? points : 'loading'} pts</h1>
   const handleEarn = () => router.push("/earn");
   const handleUse = () => router.push("/use");
   return (
