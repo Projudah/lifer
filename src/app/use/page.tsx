@@ -38,9 +38,11 @@ export default function Use() {
         setData(rewards);
     };
 
-    if (!data) {
-        getData();
-    }
+    useEffect(() => {
+        if (!data) {
+            getData();
+        }
+    }, [data]);
 
     const handleGoBack = () => router.push("/");
 
@@ -51,7 +53,7 @@ export default function Use() {
         const newTotal = parseInt(points) - parseInt(reward.cost);
         const res = await fetch('api/points', {
             method: 'POST',
-            body: JSON.stringify({ points: newTotal }),
+            body: JSON.stringify({ points: newTotal.toString() }),
             headers: {
                 'Content-Type': 'application/json',
             },

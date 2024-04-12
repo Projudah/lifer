@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PointsContext } from "./dataContext";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -27,9 +27,11 @@ export default function RootLayout({
     setPoints(data);
   };
 
-  if (!points) {
-    getPoints();
-  }
+  useEffect(() => {
+    if (!points) {
+      getPoints();
+    }
+  }, [points]);
 
   return (
     <html lang="en">
