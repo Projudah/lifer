@@ -10,7 +10,7 @@ type Props = {
     open: boolean;
     title: string;
     children: React.ReactNode;
-    onClose: () => void;
+    onClose: () => void | Promise<void>;
     secondaryAction?: Action;
 }
 export default function Modal({ open, title, children, onClose, secondaryAction }: Props) {
