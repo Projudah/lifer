@@ -22,3 +22,13 @@ export async function POST(request: NextRequest) {
   });
   return NextResponse.json(response);
 }
+
+export async function DELETE(request: NextRequest) {
+  const body = await request.json();
+  const rewardName = body.name;
+
+  if (!rewardName) return NextResponse.error();
+
+  const response = await kv.hdel("rewards", rewardName);
+  return NextResponse.json(response);
+}

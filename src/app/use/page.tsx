@@ -71,6 +71,32 @@ export default function Use() {
         setModalOpen(true);
     }
 
+    const handleDeleteReward = async (reward: Reward) => {
+        setModalData(`Deleting ${reward.name}...`);
+        setModalAction(undefined);
+
+        const res = await fetch('use/api', {
+            method: 'DELETE',
+            body: JSON.stringify({
+                name: reward.name,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!res.ok) {
+            setModalData('Error deleting reward');
+            return;
+        }
+        setModalData('Reward deleted!');
+    };
+
+    const handleDeleteClick = async (reward: Reward) => {
+        setModalData(`Delete "${reward.name}"?`);
+        setModalAction({ label: 'Delete', onAction: () => handleDeleteReward(reward) });
+        setModalOpen(true);
+    }
+
     const handleModalClose = () => {
         window.location.reload();
     }
@@ -123,6 +149,7 @@ export default function Use() {
         return <Layout key={index} horizontal left>
             <button className="earnButton" onClick={() => handleRewardClick(reward)}>{rewardCost} pts</button>
             <div>{rewardName}</div>
+            <Button label="Delete" onAction={() => handleDeleteClick(reward)} />
         </Layout>
     });
 
