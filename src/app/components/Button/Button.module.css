@@ -6,10 +6,19 @@
   padding: 10px 20px;
 }
 
-.UseColor {
+.Earn {
+  background-color: var(--earnColor);
+}
+
+.Use {
+  background-color: var(--useColor);
+}
+
+.Delete {
+  background-color: var(--deleteColor);
 }
 
 .Button:hover {
-  background-color: var(--earnColorHover);
+  background-color: var(--hoverColor);
   cursor: pointer;
 }

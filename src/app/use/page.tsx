@@ -124,7 +124,7 @@ export default function Use() {
     };
 
     const addRewardMarkup = <>
-        <Button label="Add Reward" onAction={() => setAddRewardModalOpen(true)} />
+        <Button label="Add Reward" onAction={() => setAddRewardModalOpen(true)} type='use' />
         <Modal open={addRewardModalOpen} title="Add Reward" onClose={handleAddRewardModalClose} secondaryAction={{ label: "Add", onAction: handleAddReward }}>
             <Layout>
                 <input type="text" placeholder="Reward name" value={newRewardName} onChange={(e) => setNewRewardName(e.target.value)} />
@@ -147,9 +147,9 @@ export default function Use() {
         const rewardCost = reward.cost;
 
         return <Layout key={index} horizontal left>
-            <button className="earnButton" onClick={() => handleRewardClick(reward)}>{rewardCost} pts</button>
+            <Button label={`${rewardCost} pts`} onAction={() => handleRewardClick(reward)} type='use' />
             <div>{rewardName}</div>
-            <Button label="Delete" onAction={() => handleDeleteClick(reward)} />
+            <Button label="x" onAction={() => handleDeleteClick(reward)} type='delete' />
         </Layout>
     });
 

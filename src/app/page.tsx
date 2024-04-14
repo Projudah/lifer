@@ -16,8 +16,8 @@ export default function Home() {
   return (
     <Layout>
       {pointsMarkup}
-      <Button label="Use" onAction={handleUse} />
-      <Button label="Earn" onAction={handleEarn} />
+      <Button label="Use" onAction={handleUse} type="use" />
+      <Button label="Earn" onAction={handleEarn} type="earn" />
     </Layout>
   );
 }
