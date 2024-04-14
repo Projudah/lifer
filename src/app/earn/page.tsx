@@ -16,7 +16,7 @@ type Task = {
 
 export default function Earn() {
     const router = useRouter();
-    const [data, setData] = useState<any>();
+    const [data, setData] = useState<Task[]>();
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState<string>('');
     const [modalAction, setModalAction] = useState<Action>();
@@ -83,20 +83,24 @@ export default function Earn() {
 
     if (!data || !points) return <div>loading</div>
 
-    const tasksMarkup = data.map((task: Task, index: number) => {
+    const tasksMarkup = data.flatMap((task: Task, index: number) => {
         const taskName = task.title;
         const taskPoints = task.timeChunksRequired;
 
-        return <Layout key={index} horizontal left>
-            <button className="earnButton" onClick={() => handleEarnClick(task)}>{taskPoints} pts</button>
-            <div>{taskName}</div>
-        </Layout>
+        const newEntry = []
+        newEntry.push(<Button key={`${index}earnButton`} label={`${taskPoints} pts`} onAction={() => handleEarnClick(task)} type="earn" />)
+        newEntry.push(<div key={`${index}earnLabel`} >{taskName}</div>)
+        return newEntry;
     });
 
     return <>
-        <Layout>
+        <Layout horizontal>
             <h1>Earn</h1>
             <Button label="Go back" onAction={handleGoBack} />
+        </Layout>
+
+        <Layout twocolumn>
+
             {tasksMarkup}
         </Layout>
         <Modal open={modalOpen} title="Earn" onClose={handleModalClose} secondaryAction={modalAction}>{modalData}</Modal>

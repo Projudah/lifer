@@ -14,7 +14,7 @@ type Reward = {
 
 export default function Use() {
     const router = useRouter();
-    const [data, setData] = useState<any>();
+    const [data, setData] = useState<Reward[] | string>();
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState<string>('');
     const [modalAction, setModalAction] = useState<Action>();
@@ -34,7 +34,7 @@ export default function Use() {
             setData(data);
             return;
         }
-        const rewards = Object.entries(data).map(([name, cost]) => ({ name, cost }));
+        const rewards = Object.entries<string>(data).map(([name, cost]) => ({ name, cost }));
         setData(rewards);
     };
 
@@ -139,31 +139,41 @@ export default function Use() {
 
     if (!data || !points) return <div>loading</div>
 
-    const hasRewards = data == 'no rewards found' ? false : true;
+    if (!Array.isArray(data)) {
+        return <Layout>{"No rewards available"}{addRewardMarkup}</Layout>
+    }
 
-
-    const rewardsMarkup = hasRewards && data.map((reward: Reward, index: number) => {
+    const rewardsMarkup = data.flatMap((reward: Reward, index: number) => {
         const rewardName = reward.name;
         const rewardCost = reward.cost;
 
-        return <Layout key={index} horizontal left>
-            <Button label={`${rewardCost} pts`} onAction={() => handleRewardClick(reward)} type='use' />
-            <div>{rewardName}</div>
-            <Button label="x" onAction={() => handleDeleteClick(reward)} type='delete' />
-        </Layout>
+        const newEntry = []
+        newEntry.push(<Button key={`${index}useButton`} label={`${rewardCost} pts`} onAction={() => handleRewardClick(reward)} type="use" />)
+        newEntry.push(
+            <Layout horizontal>
+                <div key={`${index}useLabel`} >{rewardName}</div>
+                <Button key={`${index}deleteButton`} label="x" onAction={() => handleDeleteClick(reward)} type="delete" />
+            </Layout>);
+        return newEntry;
     });
+
+    const hasRewardsMarkup =
+        <>
+            <Layout>
+                <h1>{points} pts</h1>
+                <Layout horizontal left>
+                    <Button label="Go back" onAction={handleGoBack} />
+                    {addRewardMarkup}
+                </Layout>
+            </Layout>
+            <Layout twocolumn>
+                {rewardsMarkup}
+            </Layout>
+        </>
 
 
     return <>
-        {hasRewards ? <Layout>
-            <h1>{points} pts</h1>
-            <Layout horizontal left>
-                <Button label="Go back" onAction={handleGoBack} />
-                {addRewardMarkup}
-            </Layout>
-            {rewardsMarkup}
-        </Layout> : <Layout>{"No rewards available"}{addRewardMarkup}</Layout>
-        }
+        {hasRewardsMarkup}
         <Modal open={modalOpen} title="Earn" onClose={handleModalClose} secondaryAction={modalAction}>{modalData}</Modal>
     </>
 }
