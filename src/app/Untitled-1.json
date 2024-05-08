@@ -1,0 +1,64 @@
+{
+  "title": "test",
+  "eventColor": null,
+  "eventCategory": "PERSONAL",
+  "timeChunksRequired": 4,
+  "minChunkSize": 1,
+  "maxChunkSize": 2,
+  "alwaysPrivate": true,
+  "timeSchemeId": "14c1749f-d0e0-4ab4-9c97-ca02e7fa212c",
+  "priority": "P3",
+  "snoozeUntil": null,
+  "due": "2024-05-10T03:00:00.000Z",
+  "onDeck": false
+}
+post
+{
+  "title": "test 2",
+  "eventColor": null,
+  "eventCategory": "WORK",
+  "timeChunksRequired": 4,
+  "minChunkSize": 4,
+  "maxChunkSize": 4,
+  "notes": "notes sections",
+  "alwaysPrivate": true,
+  "timeSchemeId": "33c760f8-bdc6-4239-943f-d116a68dfb63",
+  "priority": "P3",
+  "snoozeUntil": null,
+  "due": "2024-05-10T03:00:00.000Z",
+  "onDeck": false
+}
+
+update task: PUT to task/ID
+{
+  "id": 6439046,
+  "title": "test edit",
+  "eventCategory": "PERSONAL",
+  "eventSubType": "OTHER_PERSONAL",
+  "status": "SCHEDULED",
+  "timeChunksRequired": 4,
+  "timeChunksSpent": 0,
+  "timeChunksRemaining": 4,
+  "minChunkSize": 1,
+  "maxChunkSize": 2,
+  "alwaysPrivate": true,
+  "deleted": false,
+  "index": 188.37356567382812,
+  "due": "2024-05-10T03:00:00.000Z",
+  "created": "2024-05-06T22:13:58.259Z",
+  "updated": "2024-05-06T22:13:59.608Z",
+  "adjusted": false,
+  "atRisk": false,
+  "timeSchemeId": "14c1749f-d0e0-4ab4-9c97-ca02e7fa212c",
+  "priority": "P3",
+  "onDeck": false,
+  "sortKey": 29811004,
+  "taskSource": {
+    "type": "RECLAIM_APP"
+  },
+  "readOnlyFields": [],
+  "recurringAssignmentType": "TASK",
+  "type": "TASK",
+  "eventColor": null,
+  "snoozeUntil": null
+}

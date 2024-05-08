@@ -3,15 +3,11 @@ import { useRouter } from "next/navigation";
 import Layout from "../components/Layout/Layout";
 import { useContext, useEffect, useState } from "react";
 import Modal from "../components/Modal";
-import { PointsContext } from "../dataContext";
+import { DataContext } from "../dataContext";
 import Button from "../components/Button/Button";
 import { Action } from "../components/Modal/Modal";
-
-type Task = {
-    id: string;
-    title: string;
-    timeChunksRequired: number;
-}
+import { Task } from "../types";
+import TaskModal from "../components/Task/TaskModal";
 
 
 export default function Earn() {
@@ -20,7 +16,9 @@ export default function Earn() {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState<string>('');
     const [modalAction, setModalAction] = useState<Action>();
-    const points = useContext(PointsContext);
+    const { points } = useContext(DataContext);
+    const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined);
+    const [editTaskModalOpen, setEditTaskModalOpen] = useState(false);
 
     const getData = async () => {
         const res = await fetch('earn/api', {
@@ -81,15 +79,47 @@ export default function Earn() {
         window.location.reload();
     }
 
+    const handleEdit = (task: Task) => {
+        setSelectedTask(task);
+        setEditTaskModalOpen(true);
+    };
+
+    const handleTaskModalClose = () => {
+        setEditTaskModalOpen(false);
+    };
+
+    const handleSubmitTask = async (task: Task) => {
+        setModalOpen(true);
+        handleTaskModalClose();
+        const res = await fetch('api/tasks', {
+            method: 'PUT',
+            body: JSON.stringify(task),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!res.ok) {
+            setModalData('Error saving task');
+            return;
+        }
+        setModalData('Task saved');
+    };
+
     if (!data || !points) return <div>loading</div>
 
     const tasksMarkup = data.flatMap((task: Task, index: number) => {
         const taskName = task.title;
         const taskPoints = task.timeChunksRequired;
+        const hasGoal = task.notes && task.notes.includes('goal');
 
         const newEntry = []
         newEntry.push(<Button key={`${index}earnButton`} label={`${taskPoints} pts`} onAction={() => handleEarnClick(task)} type="earn" />)
-        newEntry.push(<div key={`${index}earnLabel`} >{taskName}</div>)
+        const taskLabelMarkup = <div key={`${index}earnLabel`} >{taskName}</div>
+        const secondEntry = <Layout key={`${index}earnLayout`} horizontal>
+            {taskLabelMarkup}
+            <Button key={`${index}earnEditButton`} label={hasGoal ? "Edit" : "Add goal"} onAction={() => handleEdit(task)} />
+        </Layout>
+        newEntry.push(secondEntry)
         return newEntry;
     });
 
@@ -100,9 +130,9 @@ export default function Earn() {
         </Layout>
 
         <Layout twocolumn>
-
             {tasksMarkup}
         </Layout>
         <Modal open={modalOpen} title="Earn" onClose={handleModalClose} secondaryAction={modalAction}>{modalData}</Modal>
+        <TaskModal task={selectedTask} open={editTaskModalOpen} onClose={handleTaskModalClose} onSubmit={handleSubmitTask} />
     </>
 }

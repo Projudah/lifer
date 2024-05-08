@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import Layout from "../components/Layout/Layout";
 import { useContext, useEffect, useState } from "react";
 import Modal from "../components/Modal";
-import { PointsContext } from "../dataContext";
+import { DataContext } from "../dataContext";
 import Button from "../components/Button/Button";
 import { Action } from "../components/Modal/Modal";
 
@@ -23,7 +23,7 @@ export default function Use() {
     const [newRewardName, setNewRewardName] = useState<string>('');
     const [newRewardCost, setNewRewardCost] = useState<string>('');
 
-    const points = useContext(PointsContext);
+    const { points } = useContext(DataContext);
 
     const getData = async () => {
         const res = await fetch('use/api', {

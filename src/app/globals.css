@@ -23,7 +23,7 @@ body {
 }
 
 .modalContainer {
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100%;
   top: 0;
@@ -47,4 +47,15 @@ input {
   border-bottom: 1px solid var(--textColor);
   padding: 10px 20px;
   margin: 5px;
+}
+
+.jsonTextArea {
+  background-color: var(--backgroundColor);
+  color: var(--textColor);
+  border: none;
+  border-bottom: 1px solid var(--textColor);
+  padding: 10px 20px;
+  margin: 5px;
+  width: 400px;
+  height: 500px;
 }

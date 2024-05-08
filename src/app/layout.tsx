@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { useEffect, useState } from "react";
-import { PointsContext } from "./dataContext";
+import { DataContext } from "./dataContext";
+import { Goals } from "./types";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [points, setPoints] = useState<string>();
+  const [goals, setGoals] = useState<Goals>();
 
   const getPoints = async () => {
     const res = await fetch("api/points", {
@@ -26,6 +28,18 @@ export default function RootLayout({
     const data = await res.json();
     setPoints(data);
   };
+
+  const getGoals = async () => {
+    const res = await fetch("api/goals", {
+      method: "GET",
+    });
+    const data = await res.json();
+    setGoals(data);
+  };
+
+  useEffect(() => {
+    getGoals();
+  }, []);
 
   useEffect(() => {
     if (!points) {
@@ -36,9 +50,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <PointsContext.Provider value={points || ''}>
+        <DataContext.Provider value={{
+          points: points || '',
+          goals: goals || {},
+
+        }}>
           {children}
-        </PointsContext.Provider>
+        </DataContext.Provider>
       </body>
     </html>
   );

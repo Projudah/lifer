@@ -19,5 +19,5 @@ export default function Button({ label, onAction, type }: Props) {
         [style.Delete]: type === 'delete',
     });
 
-    return <div className={buttonClass} onClick={onAction}>{label}</div>
+    return <button className={buttonClass} onClick={onAction}>{label}</button>
 }
