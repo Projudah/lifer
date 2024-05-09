@@ -8,7 +8,7 @@ type Props = {
     task?: Task;
     open: boolean;
     onClose: () => void;
-    onSubmit: (task: Task) => void;
+    onSubmit: (task: Task, selectedGoal: string, selectedStep: number) => void;
 }
 
 const emptyTask: Task = {
@@ -34,7 +34,7 @@ export default function TaskModal({ task, open, onClose, onSubmit }: Props) {
     const { goals } = useContext(DataContext)
 
     const [newTask, setNewTask] = useState<Task>(task || emptyTask);
-    const [goalOptions] = useState<string[]>(Object.keys(goals));
+    const [goalOptions, setGoalOptions] = useState<string[]>(Object.keys(goals));
     const [stepOptions, setStepOptions] = useState<number[]>([]);
     const [selectedGoal, setSelectedGoal] = useState<string>('');
     const [selectedStep, setSelectedStep] = useState<number>(0);
@@ -56,15 +56,25 @@ export default function TaskModal({ task, open, onClose, onSubmit }: Props) {
                 selectedGoalId = goalNote.goal;
                 selectedStepId = parseInt(goalNote.step);
             } else {
-                selectedGoalId = goalOptions[0];
+                let options = goalOptions
+                if (options.length === 0) {
+                    options = Object.keys(goals);
+                    setGoalOptions(Object.keys(goals));
+                }
+                selectedGoalId = options[0];
                 selectedStepId = 0; // Default to the first step
+            }
+
+            if (goals[selectedGoalId] === undefined) {
+                selectedGoalId = Object.keys(goals)[0];
+                selectedStepId = 0;
             }
 
             setSelectedGoal(selectedGoalId);
             setStepOptions(goals[selectedGoalId]?.steps.map((_step, index) => index));
             setSelectedStep(selectedStepId);
         }
-    }, [goalOptions, goals, newTask.notes]);
+    }, [goalOptions, goals, newTask]);
 
     const handleSetGoal = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const goalName = event.target.value;
@@ -87,7 +97,7 @@ export default function TaskModal({ task, open, onClose, onSubmit }: Props) {
 
         const retTask = { ...newTask, notes: goalNote };
         setNewTask(retTask);
-        onSubmit(retTask);
+        onSubmit(retTask, selectedGoal, selectedStep);
     };
 
     function convertToDate(input: string): string {

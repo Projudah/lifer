@@ -17,12 +17,12 @@ export default function Home() {
   const [goalModalOpen, setGoalModalOpen] = useState(false);
   const [currentGoal, setCurrentGoal] = useState<GoalType | undefined>(undefined);
 
-  const addGoal = (newGoal: GoalType) => {
-    setGoals({
-      ...goals,
-      [newGoal.name]: newGoal,
-    });
-  }
+  useEffect(() => {
+    if (initialGoals) {
+      setGoals(initialGoals);
+    }
+  }, [initialGoals]);
+
 
   const goalsMarkup = goals && Object.keys(goals).map((goalId) => {
     const goalObject = goals[goalId];
@@ -43,12 +43,10 @@ export default function Home() {
       ...goals,
       [newGoal.name]: newGoal,
     }
-    const data = {
-      goal: updatedGoals,
-    }
+
     const res = await fetch("api/goals", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify(updatedGoals),
     });
 
     const response = await res.json();

@@ -12,11 +12,20 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
     //get data from request
-    const body = await request.json();
-    const goal = body.goal;
+    const goal = await request.json();
 
     if(!goal) return NextResponse.error();
 
     const response = await kv.hset("goals", goal);
+    return NextResponse.json(response);
+}
+
+export async function DELETE(request: NextRequest) {
+    const body = await request.json();
+    const goal = body.id;
+
+    if(!goal) return NextResponse.error();
+
+    const response = await kv.hdel("goals", goal);
     return NextResponse.json(response);
 }

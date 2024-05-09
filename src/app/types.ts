@@ -15,7 +15,7 @@ export type Goals = {
 
 export type Step = {
     name: string;
-    tasks: Task[];
+    tasks: string[];
 }
 
 export type Task = {
@@ -33,6 +33,7 @@ export type Task = {
     snoozeUntil: string | null;
     due: string;
     onDeck: boolean;
+    status?: string;
 }
 
 // {

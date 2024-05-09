@@ -7,6 +7,9 @@
   --deleteColor: #a33c3c;
   --hoverColor: #5f5a5a;
   --modalColor: #3f221a;
+
+  --white: #ffffff;
+  --secondary: #585252;
 }
 
 html,
@@ -36,7 +39,7 @@ body {
   background-color: var(--modalColor);
   padding: 20px 40px;
   margin: auto;
-  width: 50%;
+  width: 90%;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
 }
 
@@ -58,4 +61,40 @@ input {
   margin: 5px;
   width: 400px;
   height: 500px;
+}
+
+.goalContainer {
+  background-color: var(--secondary);
+  width: 100%;
+  position: relative;
+}
+
+.goalTitle {
+  border: 1px solid var(--white);
+  padding: 10px 50px;
+}
+
+.goalTitle:hover {
+  background-color: var(--hoverColor);
+  cursor: pointer;
+}
+
+.stepsContainer {
+  overflow-x: scroll;
+  width: 100%;
+}
+
+.progressBarContainer {
+  position: relative;
+  height: 20px;
+  width: 100%;
+}
+
+.progressBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background-color: var(--useColor);
 }

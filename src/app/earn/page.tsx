@@ -12,27 +12,12 @@ import TaskModal from "../components/Task/TaskModal";
 
 export default function Earn() {
     const router = useRouter();
-    const [data, setData] = useState<Task[]>();
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState<string>('');
     const [modalAction, setModalAction] = useState<Action>();
-    const { points } = useContext(DataContext);
+    const { points, tasks: data, goals } = useContext(DataContext);
     const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined);
     const [editTaskModalOpen, setEditTaskModalOpen] = useState(false);
-
-    const getData = async () => {
-        const res = await fetch('earn/api', {
-            method: 'GET',
-        });
-        const data = await res.json();
-        setData(data.data);
-    };
-
-    useEffect(() => {
-        if (!data) {
-            getData();
-        }
-    }, [data]);
 
     const handleGoBack = () => router.push("/");
 
@@ -88,7 +73,28 @@ export default function Earn() {
         setEditTaskModalOpen(false);
     };
 
-    const handleSubmitTask = async (task: Task) => {
+    const addTaskToGoal = async (task: Task, selectedGoal: string, selectedStep: number) => {
+        const taskGoal = { ...goals[selectedGoal] };
+        const taskStep = taskGoal.steps[selectedStep];
+        taskStep.tasks.push(task.id);
+
+        taskGoal.steps[selectedStep] = taskStep;
+
+        const res = await fetch('api/goals', {
+            method: 'POST',
+            body: JSON.stringify({ [selectedGoal]: taskGoal }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!res.ok) {
+            return false;
+        }
+        return true;
+    }
+
+    const handleSubmitTask = async (task: Task, selectedGoal: string, selectedStep: number) => {
         setModalOpen(true);
         handleTaskModalClose();
         const res = await fetch('api/tasks', {
@@ -102,12 +108,18 @@ export default function Earn() {
             setModalData('Error saving task');
             return;
         }
+        const res2 = addTaskToGoal(task, selectedGoal, selectedStep);
+        if (!res2) {
+            setModalData('Error saving task to goal');
+            return;
+        }
         setModalData('Task saved');
     };
 
     if (!data || !points) return <div>loading</div>
 
-    const tasksMarkup = data.flatMap((task: Task, index: number) => {
+    const tasksMarkup = Object.values(data).flatMap((task: Task, index: number) => {
+        if (task.status === "ARCHIVED") return [];
         const taskName = task.title;
         const taskPoints = task.timeChunksRequired;
         const hasGoal = task.notes && task.notes.includes('goal');
