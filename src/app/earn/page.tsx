@@ -118,21 +118,19 @@ export default function Earn() {
 
     if (!data || !points) return <div>loading</div>
 
-    const tasksMarkup = Object.values(data).flatMap((task: Task, index: number) => {
-        if (task.status === "ARCHIVED") return [];
+    const tasksMarkup = Object.values(data).filter((task: Task) => task.status !== "ARCHIVED").map((task: Task, index: number) => {
         const taskName = task.title;
         const taskPoints = task.timeChunksRequired;
         const hasGoal = task.notes && task.notes.includes('goal');
 
-        const newEntry = []
-        newEntry.push(<Button key={`${index}earnButton`} label={`${taskPoints} pts`} onAction={() => handleEarnClick(task)} type="earn" />)
+        const earnB = <Button key={`${index}earnButton`} label={`${taskPoints} pts`} onAction={() => handleEarnClick(task)} type="earn" />
         const taskLabelMarkup = <div key={`${index}earnLabel`} >{taskName}</div>
-        const secondEntry = <Layout key={`${index}earnLayout`} horizontal>
+        const entry = <Layout key={`${index}earnLayout`} horizontal>
+            {earnB}
             {taskLabelMarkup}
             <Button key={`${index}earnEditButton`} label={hasGoal ? "Edit" : "Add goal"} onAction={() => handleEdit(task)} />
         </Layout>
-        newEntry.push(secondEntry)
-        return newEntry;
+        return entry;
     });
 
     return <>
@@ -141,7 +139,7 @@ export default function Earn() {
             <Button label="Go back" onAction={handleGoBack} />
         </Layout>
 
-        <Layout twocolumn>
+        <Layout left>
             {tasksMarkup}
         </Layout>
         <Modal open={modalOpen} title="Earn" onClose={handleModalClose} secondaryAction={modalAction}>{modalData}</Modal>

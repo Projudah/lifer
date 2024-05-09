@@ -109,28 +109,68 @@ export default function TaskModal({ task, open, onClose, onSubmit }: Props) {
     return (
         <Modal
             open={open}
-            title={"Goal"}
+            title={"Edit Task"}
             onClose={onClose}
             secondaryAction={{
                 label: "Save",
                 onAction: handleSubmit,
             }}
         >
-            <Layout twocolumn>
-                <label>Title</label>
-                <input type="text" value={newTask.title} onChange={(e) => setNewTask({ ...newTask, title: e.target.value })} />
-                <label>Points</label>
-                <input type="number" value={newTask.timeChunksRequired} onChange={(e) => setNewTask({ ...newTask, timeChunksRequired: parseInt(e.target.value) })} />
-                <label>Due Date</label>
-                <input type="date" value={convertToDate(newTask.due)} onChange={handleSetDate} />
-                <label>Goal</label>
-                <select value={selectedGoal} onChange={handleSetGoal}>
-                    {goalOptions.map((goal) => <option key={goal} value={goal}>{goal}</option>)}
-                </select>
-                <label>Step</label>
-                <select value={selectedStep} onChange={handleSetStep}>
-                    {stepOptions?.map((step) => <option key={step} value={step}>{goals[selectedGoal].steps[step].name}</option>)}
-                </select>
+            <Layout>
+                <Layout horizontal>
+                    <label>Title</label>
+                    <input
+                        type="text"
+                        value={newTask.title}
+                        onChange={(e) =>
+                            setNewTask({ ...newTask, title: e.target.value })
+                        }
+                    />
+                </Layout>
+                <Layout horizontal>
+                    <label>Points</label>
+                    <input
+                        type="number"
+                        value={newTask.timeChunksRequired}
+                        onChange={(e) =>
+                            setNewTask({
+                                ...newTask,
+                                timeChunksRequired: parseInt(e.target.value),
+                            })
+                        }
+                    />
+                </Layout>
+
+                <Layout horizontal>
+                    <label>Due Date</label>
+                    <input
+                        type="date"
+                        value={convertToDate(newTask.due)}
+                        onChange={handleSetDate}
+                    />
+                </Layout>
+
+                <Layout horizontal>
+                    <label>Goal</label>
+                    <select value={selectedGoal} onChange={handleSetGoal}>
+                        {goalOptions.map((goal) => (
+                            <option key={goal} value={goal}>
+                                {goal}
+                            </option>
+                        ))}
+                    </select>
+                </Layout>
+
+                <Layout horizontal>
+                    <label>Step</label>
+                    <select value={selectedStep} onChange={handleSetStep}>
+                        {stepOptions?.map((step) => (
+                            <option key={step} value={step}>
+                                {goals[selectedGoal].steps[step].name}
+                            </option>
+                        ))}
+                    </select>
+                </Layout>
             </Layout>
         </Modal>
     );

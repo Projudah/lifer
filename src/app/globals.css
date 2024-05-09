@@ -18,6 +18,7 @@ body {
   overflow-x: hidden;
   font-size: 1.3rem;
   font-weight: lighter;
+  margin: 0px;
 }
 
 body {
@@ -43,7 +44,8 @@ body {
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
 }
 
-input {
+input,
+select {
   background-color: var(--backgroundColor);
   color: var(--textColor);
   border: none;
@@ -65,7 +67,7 @@ input {
 
 .goalContainer {
   background-color: var(--secondary);
-  width: 100%;
+  width: 100vw;
   position: relative;
 }
 
@@ -81,7 +83,11 @@ input {
 
 .stepsContainer {
   overflow-x: scroll;
-  width: 100%;
+  width: 100vw;
+}
+
+.stepsLayout {
+  padding: 0px 5px;
 }
 
 .progressBarContainer {
@@ -97,4 +103,59 @@ input {
   width: 0;
   height: 100%;
   background-color: var(--useColor);
+}
+
+div {
+  margin: 0px;
+  padding: 0px;
+}
+
+.LayoutChild {
+  margin: auto auto;
+}
+
+.LayoutChildFill {
+  flex: 5;
+}
+
+.LayoutParentVertical {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  row-gap: 10px;
+}
+
+.LayoutParentHorizontal {
+  align-items: center;
+  height: 100%;
+  display: flex;
+  column-gap: 20px;
+  flex-direction: row;
+}
+
+.LayoutParentCenter {
+  width: 100vw;
+  display: block;
+  justify-content: center;
+  align-content: center;
+  height: 100%;
+  grid-template-rows: auto;
+}
+
+.LayoutParentLeft {
+  align-items: flex-start;
+}
+
+.LayoutChildLeft {
+  margin: 0px;
+}
+
+.TwoColumn {
+  grid-template-columns: auto auto;
+  column-gap: 10px;
+  justify-items: right;
+  width: fit-content;
+  margin: auto;
 }

@@ -59,7 +59,9 @@ export default function Home() {
   return (
     <Layout>
       <Button label="Add Goal" onAction={handleOpenGoalModal} />
-      {goalsMarkup}
+      <Layout>
+        {goalsMarkup}
+      </Layout>
       {pointsMarkup}
       <Button label="Use" onAction={handleUse} type="use" />
       <Button label="Earn" onAction={handleEarn} type="earn" />

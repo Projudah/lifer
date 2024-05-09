@@ -2,8 +2,6 @@ import React from 'react';
 import classNames from 'classnames';
 
 
-import styles from './Layout.module.css';
-
 interface LayoutItemProps {
     children: React.ReactNode;
     fill?: boolean;
@@ -26,17 +24,17 @@ function isLayoutItem(node: any) {
 }
 export default function Layout({ className, horizontal, center, left, twocolumn, children }: Props) {
     const LayoutItems = Array.isArray(children) ? children : [children]
-    const classParent = horizontal ? styles.LayoutParentHorizontal : styles.LayoutParentVertical;
-    const centerLayout = center ? styles.LayoutParentCenter : undefined;
+    const classParent = horizontal ? "LayoutParentHorizontal" : "LayoutParentVertical";
+    const centerLayout = center ? "LayoutParentCenter" : undefined;
 
     const classes = classNames(
         className,
         {
-            [styles.LayoutParentHorizontal]: horizontal,
-            [styles.LayoutParentVertical]: !horizontal,
-            [styles.LayoutParentCenter]: center,
-            [styles.LayoutParentLeft]: left,
-            [styles.TwoColumn]: twocolumn
+            ["LayoutParentHorizontal"]: horizontal,
+            ["LayoutParentVertical"]: !horizontal,
+            ["LayoutParentCenter"]: center,
+            ["LayoutParentLeft"]: left,
+            ["TwoColumn"]: twocolumn
         }
     );
     return <div className={classes}>
@@ -49,10 +47,13 @@ export default function Layout({ className, horizontal, center, left, twocolumn,
 }
 
 export function LayoutItem({ children, fill, left }: LayoutItemProps) {
-    const classNames = `
-    ${fill ? styles.LayoutChildFill : styles.LayoutChild}
-    ${left ? styles.LayoutChildLeft : undefined} `;
 
-    return <div className={classNames}>{children}</div>
+    const classes = classNames({
+        ["LayoutChildFill"]: fill,
+        ["LayoutChild"]: !fill,
+        ["LayoutChildLeft"]: left
+    });
+
+    return <div className={classes}>{children}</div>
 
 }

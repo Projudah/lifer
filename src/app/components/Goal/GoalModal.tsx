@@ -36,7 +36,7 @@ function StepInput({ index, onChange, initialValue }: StepProps) {
     }
 
     return (
-        <Layout twocolumn>
+        <Layout horizontal>
             <label>Step Name</label>
             <input type="text" id={index.toString()} value={stepValue} onChange={handleChange} />
         </Layout>
@@ -95,7 +95,7 @@ export default function GoalModal({ goal, open, onClose, onSubmit }: Props) {
             }}
         >
             <Layout>
-                <Layout twocolumn>
+                <Layout>
                     <label>Goal Name</label>
                     <input type="text" value={newGoal.name} onChange={handleGoalNameChange} />
                     {stepMarkup}

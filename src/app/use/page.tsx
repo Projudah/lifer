@@ -147,29 +147,27 @@ export default function Use() {
         const rewardName = reward.name;
         const rewardCost = reward.cost;
 
-        const newEntry = []
-        newEntry.push(<Button key={`${index}useButton`} label={`${rewardCost} pts`} onAction={() => handleRewardClick(reward)} type="use" />)
-        newEntry.push(
+        const useB = <Button key={`${index}useButton`} label={`${rewardCost} pts`} onAction={() => handleRewardClick(reward)} type="use" />
+        const entry =
             <Layout horizontal>
+                {useB}
                 <div key={`${index}useLabel`} >{rewardName}</div>
                 <Button key={`${index}deleteButton`} label="x" onAction={() => handleDeleteClick(reward)} type="delete" />
-            </Layout>);
-        return newEntry;
+            </Layout>;
+        return entry;
     });
 
     const hasRewardsMarkup =
-        <>
-            <Layout>
-                <h1>{points} pts</h1>
-                <Layout horizontal left>
-                    <Button label="Go back" onAction={handleGoBack} />
-                    {addRewardMarkup}
-                </Layout>
+        <Layout>
+            <h1>{points} pts</h1>
+            <Layout horizontal>
+                <Button label="Go back" onAction={handleGoBack} />
+                {addRewardMarkup}
             </Layout>
-            <Layout twocolumn>
+            <Layout left>
                 {rewardsMarkup}
             </Layout>
-        </>
+        </Layout>
 
 
     return <>

@@ -60,7 +60,7 @@ export default function Goal({ name, steps }: GoalType) {
                 <p className="goalTitle" onClick={toggleSteps}>{name}</p>
                 {expanded &&
                     <div className="stepsContainer">
-                        <Layout horizontal>
+                        <Layout horizontal className="stepsLayout">
                             {steps && Object.keys(steps).map((stepId) => {
                                 return generateStep(steps[Number(stepId)]);
                             })}
