@@ -36,13 +36,13 @@ export default function Goal({ name, steps }: GoalType) {
 
     const generateStep = (step: Step) => {
         return (
-            <Layout key={step.name}>
-                <p>{step.name}</p>
+            <Layout key={step.name} className="stepColumn">
+                <p className='stepTitle'>{step.name}</p>
                 <div>
                     {step.tasks.map(taskId => {
                         const task = tasks[taskId];
                         return (
-                            <Layout key={task.title} horizontal>
+                            <Layout className="stepTaskEntry" key={task.title} horizontal>
                                 <input type="checkbox" checked={task.status === "ARCHIVED"} />
                                 <p>{task.title}</p>
                             </Layout>

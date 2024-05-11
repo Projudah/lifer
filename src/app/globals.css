@@ -84,10 +84,27 @@ select {
 .stepsContainer {
   overflow-x: scroll;
   width: 100vw;
+  font-size: small;
+  padding-bottom: 10px;
+}
+
+.stepTitle {
+  font-weight: bold;
 }
 
 .stepsLayout {
   padding: 0px 5px;
+  align-items: start;
+}
+
+.stepColumn {
+  border-right: 1px solid var(--white);
+  padding: 0px 10px;
+}
+
+.stepTaskEntry {
+  align-items: center;
+  justify-items: flex-start;
 }
 
 .progressBarContainer {
@@ -111,7 +128,7 @@ div {
 }
 
 .LayoutChild {
-  margin: auto auto;
+  margin: 0 0;
 }
 
 .LayoutChildFill {
@@ -128,7 +145,6 @@ div {
 }
 
 .LayoutParentHorizontal {
-  align-items: center;
   height: 100%;
   display: flex;
   column-gap: 20px;
