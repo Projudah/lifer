@@ -2,6 +2,9 @@ import { GoalType, Step } from "@/app/types";
 import Layout from "../Layout/Layout";
 import { useContext, useState } from "react";
 import { DataContext } from "@/app/dataContext";
+import Button from "../Button/Button";
+import GoalModal from "./GoalModal";
+import Modal from "../Modal";
 
 function ProgressBar({ progress }: { progress: number }) {
     return (
@@ -13,6 +16,9 @@ function ProgressBar({ progress }: { progress: number }) {
 
 export default function Goal({ name, steps }: GoalType) {
     const [expanded, setExpanded] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+    const [error, setError] = useState<string>();
     const { tasks } = useContext(DataContext);
 
     const toggleSteps = () => {
@@ -43,7 +49,7 @@ export default function Goal({ name, steps }: GoalType) {
                         const task = tasks[taskId];
                         return (
                             <Layout className="stepTaskEntry" key={task.title} horizontal>
-                                <input type="checkbox" checked={task.status === "ARCHIVED"} />
+                                <input type="checkbox" checked={task.status === "ARCHIVED"} readOnly />
                                 <p>{task.title}</p>
                             </Layout>
                         )
@@ -51,6 +57,60 @@ export default function Goal({ name, steps }: GoalType) {
                 </div>
             </Layout>
         )
+    }
+
+    const closeModal = () => {
+        setModalOpen(false);
+    }
+
+    const handleEditGoal = () => {
+        setModalOpen(true);
+    }
+
+    const handleModalSubmit = async (goal: GoalType) => {
+        closeModal();
+
+        const res = await fetch("api/goals", {
+            method: "POST",
+            body: JSON.stringify({
+                [goal.name]: goal
+            })
+        });
+
+        const response = await res.json();
+        if (response) {
+            window.location.reload();
+        }
+    }
+
+    const confirmDeleteGoal = () => {
+        closeModal();
+        setConfirmModalOpen(true)
+    }
+
+    const handleDeleteGoal = () => {
+        const res = fetch("api/goals", {
+            method: "DELETE",
+            body: JSON.stringify({
+                id: name
+            })
+        });
+
+        res.then(response => {
+            if (response.ok) {
+                setConfirmModalOpen(false);
+                window.location.reload();
+            } else {
+                setError("Error deleting goal");
+            }
+        })
+    }
+
+    const handleCloseConfirmModal = () => {
+        if (error) {
+            setError(undefined);
+        }
+        setConfirmModalOpen(false);
     }
     return (
         <>
@@ -65,9 +125,14 @@ export default function Goal({ name, steps }: GoalType) {
                                 return generateStep(steps[Number(stepId)]);
                             })}
                         </Layout>
+                        <Button onAction={handleEditGoal} label="Edit" />
                     </div>
                 }
             </Layout>
+            <GoalModal open={modalOpen} goal={{ name, steps }} onClose={closeModal} onSubmit={handleModalSubmit} onDelete={confirmDeleteGoal} />
+            <Modal open={confirmModalOpen} title="Delete Goal" onClose={handleCloseConfirmModal} secondaryAction={error ? undefined : { label: "Yes", onAction: handleDeleteGoal }}>
+                {error ? <p>{error}</p> : <p>Are you sure you want to delete this goal?</p>}
+            </Modal>
         </>
 
     )

@@ -6,7 +6,7 @@ import classNames from 'classnames';
 interface Props {
     label: string | React.ReactNode;
     onAction(): void;
-    type?: 'use' | 'earn' | 'delete';
+    type?: 'use' | 'earn' | 'delete' | 'default';
 }
 
 export default function Button({ label, onAction, type }: Props) {
@@ -17,6 +17,7 @@ export default function Button({ label, onAction, type }: Props) {
         [style.Use]: type === 'use',
         [style.Earn]: type === 'earn',
         [style.Delete]: type === 'delete',
+        [style.Default]: type === 'default',
     });
 
     return <button className={buttonClass} onClick={onAction}>{label}</button>

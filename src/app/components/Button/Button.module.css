@@ -19,6 +19,10 @@
   background-color: var(--deleteColor);
 }
 
+.Default {
+  background-color: var(--defaultColor);
+}
+
 .Button:hover {
   background-color: var(--hoverColor);
   cursor: pointer;

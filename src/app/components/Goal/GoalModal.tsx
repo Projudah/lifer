@@ -2,12 +2,14 @@ import { GoalType, Step } from "@/app/types";
 import Layout from "../Layout/Layout";
 import Modal from "../Modal";
 import { useState } from "react";
+import Button from "../Button/Button";
 
 type Props = {
     goal?: GoalType;
     open: boolean;
     onClose: () => void;
     onSubmit: (goal: GoalType) => void;
+    onDelete?: () => void;
 }
 
 type StepProps = {
@@ -43,11 +45,13 @@ function StepInput({ index, onChange, initialValue }: StepProps) {
     );
 }
 
-export default function GoalModal({ goal, open, onClose, onSubmit }: Props) {
+export default function GoalModal({ goal, open, onClose, onSubmit, onDelete }: Props) {
     const goalData = goal || emptyGoal;
 
     const [newGoal, setNewGoal] = useState(goalData);
     const [newSteps, setNewSteps] = useState<string[]>(goalData.steps.map(step => step.name));
+    const [useJSON, setUseJSON] = useState<boolean>(false);
+    const [jsonValue, setJSONValue] = useState<string>(JSON.stringify(newGoal));
 
     const handleGoalNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setNewGoal({
@@ -75,6 +79,11 @@ export default function GoalModal({ goal, open, onClose, onSubmit }: Props) {
     });
 
     const handleSubmit = () => {
+        if (useJSON) {
+            const parsedJSON = JSON.parse(jsonValue);
+            onSubmit(parsedJSON);
+            return;
+        }
         newGoal.steps = newSteps.map(step => {
             return {
                 name: step,
@@ -83,6 +92,10 @@ export default function GoalModal({ goal, open, onClose, onSubmit }: Props) {
         });
         onSubmit(newGoal);
     };
+
+    const handleJSONChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setJSONValue(event.target.value);
+    }
 
     return (
         <Modal
@@ -94,14 +107,20 @@ export default function GoalModal({ goal, open, onClose, onSubmit }: Props) {
                 onAction: handleSubmit,
             }}
         >
-            <Layout>
+            {!useJSON && <Layout>
                 <Layout>
                     <label>Goal Name</label>
                     <input type="text" value={newGoal.name} onChange={handleGoalNameChange} />
                     {stepMarkup}
                 </Layout>
-                <button onClick={handleAddStep}>Add Step</button>
-            </Layout>
+                <Button onAction={handleAddStep} label="Add Step" type="default" />
+                {onDelete && <Button onAction={onDelete} label="Delete" type="delete" />}
+            </Layout>}
+            {useJSON && <Layout>
+                <label>JSON</label>
+                <textarea className="jsonTextArea" value={jsonValue} onChange={handleJSONChange} />
+            </Layout>}
+            <Button onAction={() => setUseJSON(!useJSON)} label={useJSON ? "Use Form" : "Use JSON"} type="default" />
         </Modal>
     );
 }
