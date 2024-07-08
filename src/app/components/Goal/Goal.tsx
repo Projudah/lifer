@@ -6,7 +6,7 @@ import Button from "../Button/Button";
 import GoalModal from "./GoalModal";
 import Modal from "../Modal";
 
-function ProgressBar({ progress }: { progress: number }) {
+export function ProgressBar({ progress }: { progress: number }) {
     return (
         <div className="progressBarContainer">
             <div className="progressBar" style={{ width: `${progress}%` }}></div>
@@ -31,7 +31,7 @@ export default function Goal({ name, steps }: GoalType) {
         steps.forEach(step => {
             step.tasks.forEach(taskId => {
                 totalTasks++;
-                if (tasks[taskId]?.status === "ARCHIVED") {
+                if (taskId.id && tasks[taskId.id]?.status === "ARCHIVED") {
                     completedTasks++;
                 }
             })
@@ -46,7 +46,8 @@ export default function Goal({ name, steps }: GoalType) {
                 <p className='stepTitle'>{step.name}</p>
                 <div>
                     {step.tasks.map(taskId => {
-                        const task = tasks[taskId];
+                        const task = taskId.id && tasks[taskId.id];
+                        if (!task) return null;
                         return (
                             <Layout className="stepTaskEntry" key={task.title} horizontal>
                                 <input type="checkbox" checked={task.status === "ARCHIVED"} readOnly />

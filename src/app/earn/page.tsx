@@ -76,7 +76,7 @@ export default function Earn() {
     const addTaskToGoal = async (task: Task, selectedGoal: string, selectedStep: number) => {
         const taskGoal = { ...goals[selectedGoal] };
         const taskStep = taskGoal.steps[selectedStep];
-        taskStep.tasks.push(task.id);
+        taskStep.tasks.push(task);
 
         taskGoal.steps[selectedStep] = taskStep;
 

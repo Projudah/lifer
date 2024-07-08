@@ -3,6 +3,8 @@ import Layout from "../Layout/Layout";
 import Modal from "../Modal";
 import { useContext, useEffect, useState } from "react";
 import { DataContext } from "@/app/dataContext";
+import moment from 'moment-timezone';
+
 
 type Props = {
     task?: Task;
@@ -12,21 +14,21 @@ type Props = {
 }
 
 const emptyTask: Task = {
-    id: "",
     title: "",
     eventColor: null,
-    eventCategory: "",
-    timeChunksRequired: 0,
-    minChunkSize: 0,
-    maxChunkSize: 0,
-    notes: "",
-    alwaysPrivate: false,
-    timeSchemeId: "",
-    priority: "",
+    eventCategory: "PERSONAL",
+    minChunkSize: 1,
+    maxChunkSize: 2,
+    alwaysPrivate: true,
+    timeSchemeId: "14c1749f-d0e0-4ab4-9c97-ca02e7fa212c",
     snoozeUntil: null,
-    due: "",
     onDeck: false,
+    timeChunksRequired: 0,
+    notes: "",
+    priority: "P3",
+    due: "",
 }
+
 
 
 export default function TaskModal({ task, open, onClose, onSubmit }: Props) {
@@ -89,7 +91,7 @@ export default function TaskModal({ task, open, onClose, onSubmit }: Props) {
 
     const handleSetDate = (event: React.ChangeEvent<HTMLInputElement>) => {
         const dateString = event.target.value;
-        setNewTask({ ...newTask, due: dateString });
+        setNewTask({ ...newTask, due: convertToZonedTime(dateString) });
     }
 
     const handleSubmit = () => {
@@ -104,6 +106,18 @@ export default function TaskModal({ task, open, onClose, onSubmit }: Props) {
         if (!input) return ''
         const date = new Date(input);
         return date.toISOString().split('T')[0];
+    }
+
+
+    function convertToZonedTime(input: string): string {
+        if (!input) return '';
+        // Assuming the input is a date string like "2024-03-03"
+        // and you want to set the time to 11pm (23:00) in your local timezone
+        const timezone = 'America/New_York'; // Change this to your actual timezone if different
+        const formattedDate = moment.tz(input, timezone)
+            .set({ hour: 23, minute: 0, second: 0 }) // Set time to 11pm
+            .format(); // Default format includes the timezone offset, e.g., "2024-03-03T23:00:00-05:00"
+        return formattedDate;
     }
 
     return (
