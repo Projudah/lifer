@@ -5,10 +5,12 @@ export type Store = {
     points: string;
     goals: Goals;
     tasks: Record<string, Task>;
+    fetchAll: () => Promise<void>;
 }
 
 export const DataContext = createContext<Store>({
     points: '',
     goals: {},
     tasks: {},
+    fetchAll: async () => { },
 });

@@ -1,4 +1,4 @@
-import { GoalType, Step } from "@/app/types";
+import { GoalType, Step, Task } from "@/app/types";
 import Layout from "../Layout/Layout";
 import { useContext, useState } from "react";
 import { DataContext } from "@/app/dataContext";
@@ -16,10 +16,10 @@ export function ProgressBar({ progress }: { progress: number }) {
 
 export default function Goal({ name, steps }: GoalType) {
     const [expanded, setExpanded] = useState(false);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [confirmModalOpen, setConfirmModalOpen] = useState(false);
     const [error, setError] = useState<string>();
-    const { tasks } = useContext(DataContext);
+    const [dialogState, setDialogState] = useState<string>();
+    const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined);
+    const { tasks, fetchAll } = useContext(DataContext);
 
     const toggleSteps = () => {
         setExpanded(!expanded);
@@ -40,6 +40,28 @@ export default function Goal({ name, steps }: GoalType) {
         return progress;
     }
 
+    const completeTask = async () => {
+
+        if (!selectedTask) return;
+        setDialogState('loading');
+
+        const res = await fetch('earn/api', {
+            method: 'POST',
+            body: JSON.stringify({ id: selectedTask.id }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!res.ok) {
+            setDialogState('error');
+            const error = await res.json();
+            setError(error.message);
+            return;
+        }
+        setDialogState('success');
+        // update points
+    };
+
     const generateStep = (step: Step) => {
         return (
             <Layout key={step.name} className="stepColumn">
@@ -48,9 +70,14 @@ export default function Goal({ name, steps }: GoalType) {
                     {step.tasks.map(taskId => {
                         const task = taskId.id && tasks[taskId.id];
                         if (!task) return null;
+                        const isCompleted = task.status === "ARCHIVED";
                         return (
                             <Layout className="stepTaskEntry" key={task.title} horizontal>
-                                <input type="checkbox" checked={task.status === "ARCHIVED"} readOnly />
+                                <input type="checkbox" checked={isCompleted} onClick={() => {
+                                    if (isCompleted) return;
+                                    setSelectedTask(task);
+                                    setDialogState('confimComplete')
+                                }} readOnly />
                                 <p>{task.title}</p>
                             </Layout>
                         )
@@ -61,11 +88,11 @@ export default function Goal({ name, steps }: GoalType) {
     }
 
     const closeModal = () => {
-        setModalOpen(false);
+        setDialogState(undefined);
     }
 
     const handleEditGoal = () => {
-        setModalOpen(true);
+        setDialogState('goal');
     }
 
     const handleModalSubmit = async (goal: GoalType) => {
@@ -81,12 +108,13 @@ export default function Goal({ name, steps }: GoalType) {
         const response = await res.json();
         if (response) {
             window.location.reload();
+            return
         }
+        setError("Error updating goal");
     }
 
     const confirmDeleteGoal = () => {
-        closeModal();
-        setConfirmModalOpen(true)
+        setDialogState('confirmDelete');
     }
 
     const handleDeleteGoal = () => {
@@ -99,7 +127,6 @@ export default function Goal({ name, steps }: GoalType) {
 
         res.then(response => {
             if (response.ok) {
-                setConfirmModalOpen(false);
                 window.location.reload();
             } else {
                 setError("Error deleting goal");
@@ -111,7 +138,29 @@ export default function Goal({ name, steps }: GoalType) {
         if (error) {
             setError(undefined);
         }
-        setConfirmModalOpen(false);
+        setDialogState(undefined);
+        fetchAll();
+    }
+
+
+    const renderDialog = () => {
+        switch (dialogState) {
+            case "goal":
+                return <GoalModal open={true} goal={{ name, steps }} onClose={() => setDialogState(undefined)} onSubmit={handleModalSubmit} onDelete={confirmDeleteGoal} />
+            case "error":
+                return <Modal open={true} title="Error" onClose={handleCloseConfirmModal}><p>{error}</p></Modal>
+            case "confirmDelete":
+                return <Modal open={true} title="Delete Goal" onClose={() => { setDialogState(undefined) }} secondaryAction={{ label: "Yes", onAction: handleDeleteGoal }}><p>Are you sure you want to delete this goal?</p></Modal>
+            case "confimComplete":
+                return <Modal open={true} title="Complete Task" onClose={() => { setDialogState(undefined) }} secondaryAction={{ label: "Yes", onAction: completeTask }}><p>Complete task {selectedTask?.title}?</p></Modal>
+            case "success":
+                return <Modal open={true} title="Success" onClose={handleCloseConfirmModal}><p>{'Task completed successfully (Points not yet updated)'}</p></Modal>
+            case "loading":
+                return <Modal open={true} title="Loading" onClose={() => { }}><p>Loading...</p></Modal>
+            default:
+                return null;
+
+        }
     }
     return (
         <>
@@ -130,10 +179,7 @@ export default function Goal({ name, steps }: GoalType) {
                     </div>
                 }
             </Layout>
-            <GoalModal open={modalOpen} goal={{ name, steps }} onClose={closeModal} onSubmit={handleModalSubmit} onDelete={confirmDeleteGoal} />
-            <Modal open={confirmModalOpen} title="Delete Goal" onClose={handleCloseConfirmModal} secondaryAction={error ? undefined : { label: "Yes", onAction: handleDeleteGoal }}>
-                {error ? <p>{error}</p> : <p>Are you sure you want to delete this goal?</p>}
-            </Modal>
+            {renderDialog()}
         </>
 
     )

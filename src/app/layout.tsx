@@ -61,10 +61,13 @@ export default function RootLayout({
     setTasks(tasksObject);
   };
 
+  const fetchAll = async () => {
+    // await all fetches
+    await Promise.all([getPoints(), getGoals(), getTasks()]);
+  }
+
   useEffect(() => {
-    getGoals();
-    getPoints();
-    getTasks();
+    fetchAll();
   }, []);
 
 
@@ -75,6 +78,7 @@ export default function RootLayout({
           points: points || '',
           goals: goals || {},
           tasks: tasks || {},
+          fetchAll,
         }}>
           {children}
         </DataContext.Provider>
