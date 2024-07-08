@@ -54,7 +54,9 @@ export default function RootLayout({
     const tasksArray = data.data;
     const tasksObject: Record<string, Task> = {};
     tasksArray.forEach((task: Task) => {
-      tasksObject[task.id] = task;
+      if (task.id) {
+        tasksObject[task.id] = task;
+      };
     });
     setTasks(tasksObject);
   };
