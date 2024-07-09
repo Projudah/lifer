@@ -28,9 +28,11 @@ export default function Home() {
     }
   }, [initialGoals]);
 
+  const sortGoals = (goals: Goals) => {
+    return Object.values(goals).sort((a, b) => a.name.localeCompare(b.name));
+  }
 
-  const goalsMarkup = goals && Object.keys(goals).map((goalId) => {
-    const goalObject = goals[goalId];
+  const goalsMarkup = goals && sortGoals(goals).map((goalObject) => {
     return <Goal key={goalObject.name} name={goalObject.name} steps={goalObject.steps} />;
   });
   const pointsMarkup = <h1>{points ? points : 'loading'} pts</h1>
@@ -45,6 +47,11 @@ export default function Home() {
 
   // function that converts time string '15 minutes', '30 minutes', '1 hour', '2 hours' to chunks of 15 minutes e.g 1 hour = 4 chunks
   const convertTimeToChunks = (time: string) => {
+    // check if time is already in chunks and return eg time = '4'
+    if (!isNaN(parseInt(time))) {
+      return time;
+    }
+
     const timeArray = time.split(' ');
     const timeValue = parseInt(timeArray[0]);
     const timeUnit = timeArray[1];
@@ -58,7 +65,7 @@ export default function Home() {
         chunks = timeValue * 4;
         break;
       default:
-        chunks = 0;
+        chunks = 2;
     }
     return chunks;
   }
