@@ -179,3 +179,67 @@ div {
   width: fit-content;
   margin: auto;
 }
+
+.Fixed {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+  justify-content: center;
+  background-color: var(--backgroundColor);
+  padding: 10px 0;
+  z-index: 1;
+}
+
+.spacer {
+  height: 70px;
+}
+
+.tileClass {
+  background-color: var(--defaultColor);
+  color: var(--textColor);
+  border: 5px solid var(--backgroundColor);
+  padding: 10px 0px;
+  width: 15px;
+  border-radius: 10px;
+}
+
+.square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px;
+  padding: 5px 0px;
+  border-radius: 10px;
+  color: var(--secondary);
+}
+
+.today {
+  border: 3px solid var(--white);
+  font-weight: bold;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  color: var(--textColor);
+  text-decoration: none;
+  width: 15px;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+}
+
+.react-calendar__navigation {
+  text-align: center;
+}
+
+.react-calendar__navigation__arrow,
+.react-calendar__navigation__label {
+  background-color: unset;
+  border: none;
+}
+
+.react-calendar__navigation__arrow:disabled {
+  visibility: hidden;
+}

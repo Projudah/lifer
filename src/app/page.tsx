@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import Button from "./components/Button/Button";
 import Layout from "./components/Layout/Layout";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { DataContext } from "./dataContext";
 import Goal from "./components/Goal";
 import GoalModal from "./components/Goal/GoalModal";
@@ -11,22 +11,62 @@ import { GoalType, Goals, Task } from "./types";
 import TaskModal from "./components/Task/TaskModal";
 import Modal from "./components/Modal";
 import { ProgressBar } from "./components/Goal/Goal";
+import Calendar from "react-calendar";
+
+function Square({ value }: { value: string }) {
+  // a function that takes value, from 0-8 interpolate between red #a33c3c to green #0f7136
+  function interpolateColor(value: number) {
+    const red = 163 - (value * 20);
+    const green = 55 + (value * 20);
+    return `rgb(${red}, ${green}, 54)`;
+  }
+
+  return (
+    <div className="square" style={{ backgroundColor: interpolateColor(Number(value)) }}>
+      {value}
+    </div>
+  );
+
+}
 
 
 export default function Home() {
   const router = useRouter();
-  const { points, goals: initialGoals } = useContext(DataContext);
+  const { points, goals: initialGoals, tasks } = useContext(DataContext);
   const [goals, setGoals] = useState<Goals>(initialGoals);
   const [currentGoal, setCurrentGoal] = useState<GoalType | undefined>(undefined);
   const [modalState, setModalState] = useState<string>();
   const [response, setResponse] = useState<string>();
   const [progress, setProgress] = useState<number>(0);
+  const [today, setToday] = useState<Date>(new Date());
+  const [dateScoreMap, setDateScoreMap] = useState<Map<string, number>>(new Map());
+  const completedTasks = useMemo(() => {
+    return Object.values(tasks).filter((task: Task) => task.status === "COMPLETE" || task.status === "ARCHIVED");
+  }, [tasks]);
+
 
   useEffect(() => {
     if (initialGoals) {
       setGoals(initialGoals);
     }
   }, [initialGoals]);
+
+  useEffect(() => {
+    const dateScoreMap = new Map<string, number>();
+    completedTasks.forEach((task) => {
+      if (task.finished) {
+        // Convert the finished date to a Date object
+        const localDate = new Date(task.finished);
+        // Convert to UTC string in 'YYYY-MM-DD' format for consistent key usage
+        const utcDateString = localDate.toISOString().split('T')[0];
+        // Use this string as the map key
+        const score = dateScoreMap.get(utcDateString) || 0;
+        dateScoreMap.set(utcDateString, score + Number(task.timeChunksRequired));
+      }
+    });
+    setDateScoreMap(dateScoreMap);
+  }, [completedTasks]);
+
 
   const sortGoals = (goals: Goals) => {
     return Object.values(goals).sort((a, b) => a.name.localeCompare(b.name));
@@ -202,18 +242,81 @@ export default function Home() {
     }
   }
 
-  return (
-    <Layout>
-      <Button label="Add Goal" onAction={handleOpenGoalModal} />
-      <Button label="Add Task" onAction={handleOpenTaskModal} />
+  const tileClassName = ({ date, view }: { date: Date, view: string }) => {
+    let classNames = 'tileClass'; // Set the base class name
 
-      <Layout>
-        {goalsMarkup}
+    if (view === 'month') {
+      // if today is the date, append 'today' to classNames
+      if (date.toISOString().split('T')[0] === today.toISOString().split('T')[0]) {
+        classNames += ' today';
+      }
+    }
+    return classNames;
+  }
+
+  const onClickDay = (value: Date) => {
+    console.log('value:', value, value.toISOString().split('T')[0]);
+    console.log(dateScoreMap.get(value.toISOString().split('T')[0]));
+    console.log(dateScoreMap);
+    console.log('---------\n')
+  }
+
+  const tileContent = ({ date, view }: { date: Date, view: string }) => {
+    if (view === 'month') {
+      // if date is after today, return null
+      if (date > new Date()) {
+        return null;
+      }
+      const utcDateString = date.toISOString().split('T')[0];
+      const score = dateScoreMap.get(utcDateString);
+      return <Square value={score ? score.toString() : '0'} />;
+    }
+  }
+
+  const calendarLabel = ({ date, view }: { date: Date, view: string }) => {
+    return (
+      <Button label={date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} onAction={() => {
+        setToday(new Date(date));
+      }} type="default" />
+    );
+
+  }
+
+  const renderCalendar = () => {
+    return (<Calendar
+      value={today}
+      tileClassName={tileClassName}
+      onClickDay={onClickDay}
+      tileContent={tileContent}
+      minDetail="month"
+      maxDetail="month"
+      next2Label={null}
+      prev2Label={null}
+      nextLabel={<Button label=">" onAction={() => { }} />}
+      prevLabel={<Button label="<" onAction={() => { }} />}
+      navigationLabel={calendarLabel}
+      maxDate={new Date()}
+      onViewChange={(view) => console.log(view)}
+    />)
+  }
+
+  return (
+    <>
+      <Layout className="Fixed" horizontal>
+        <Button label="Add Goal" onAction={handleOpenGoalModal} />
+        <Button label="Add Task" onAction={handleOpenTaskModal} />
+        <Button label="Use" onAction={handleUse} type="use" />
+        <Button label="Earn" onAction={handleEarn} type="earn" />
       </Layout>
-      {pointsMarkup}
-      <Button label="Use" onAction={handleUse} type="use" />
-      <Button label="Earn" onAction={handleEarn} type="earn" />
-      {renderModal()}
-    </Layout>
+      <Layout>
+        <div className="spacer"></div>
+        {renderCalendar()}
+        <Layout>
+          {goalsMarkup}
+        </Layout>
+        {pointsMarkup}
+        {renderModal()}
+      </Layout>
+    </>
   );
 }
