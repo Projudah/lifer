@@ -19,7 +19,7 @@ body {
   overflow-x: hidden;
   font-size: 1.3rem;
   font-weight: lighter;
-  margin: 0px;
+  margin: 0px 5px;
 }
 
 body {
@@ -151,7 +151,7 @@ div {
 .LayoutParentHorizontal {
   height: 100%;
   display: flex;
-  column-gap: 20px;
+  column-gap: 15px;
   flex-direction: row;
 }
 
@@ -193,7 +193,7 @@ div {
 }
 
 .spacer {
-  height: 70px;
+  height: 100px;
 }
 
 .tileClass {

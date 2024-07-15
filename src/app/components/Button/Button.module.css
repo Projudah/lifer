@@ -1,7 +1,6 @@
 .Button {
   color: var(--textColor);
   font-weight: bold;
-  font-size: 1rem;
   border: none;
   background-color: var(--earnColor);
   padding: 10px 20px;
