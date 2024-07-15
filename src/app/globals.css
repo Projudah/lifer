@@ -242,13 +242,25 @@ div {
   margin: 0 5px;
   padding: 10px 15px;
   font-weight: bold;
+  box-sizing: border-box; /* Ensure dimensions include padding and border */
 }
 
 .react-calendar__navigation__arrow:disabled {
-  visibility: hidden;
+  background-color: var(--backgroundColor);
+  border: 1px solid var(--defaultColor);
+  color: var(--defaultColor);
+  padding: 9px 14px;
 }
 
 .calendar-container {
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
   border-radius: 10px;
+  border-top: 1px solid var(--defaultColor);
+  border-left: 1px solid var(--defaultColor);
+  padding: 10px;
+}
+
+.pointsValue {
+  font-weight: bold;
+  color: var(--useColor);
 }

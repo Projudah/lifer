@@ -88,7 +88,7 @@ export default function Home() {
   const goalsMarkup = goals && sortGoals(goals).map((goalObject) => {
     return <Goal key={goalObject.name} name={goalObject.name} steps={goalObject.steps} />;
   });
-  const pointsMarkup = <h1>{points ? points : 'loading'} pts</h1>
+  const pointsMarkup = <span><span className="pointsValue">{points ? points : 'loading'}</span> pts</span>
 
   const handleEarn = () => router.push("/earn");
 
@@ -311,6 +311,7 @@ export default function Home() {
   return (
     <>
       <Layout className="Fixed" horizontal>
+        {pointsMarkup}
         <Button label="Add Goal" onAction={handleOpenGoalModal} />
         <Button label="Add Task" onAction={handleOpenTaskModal} />
         <Button label="Use" onAction={handleUse} type="use" />
@@ -322,7 +323,6 @@ export default function Home() {
         <Layout>
           {goalsMarkup}
         </Layout>
-        {pointsMarkup}
         {renderModal()}
       </Layout>
     </>
