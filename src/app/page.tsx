@@ -39,7 +39,7 @@ export default function Home() {
   const [response, setResponse] = useState<string>();
   const [progress, setProgress] = useState<number>(0);
   const [today, setToday] = useState<Date>(new Date());
-  const [dateScoreMap, setDateScoreMap] = useState<Map<string, number>>(new Map());
+  const [dateScoreMap, setDateScoreMap] = useState<Map<string, Task[]>>(new Map());
   const completedTasks = useMemo(() => {
     return Object.values(tasks).filter((task: Task) => task.status === "COMPLETE" || task.status === "ARCHIVED");
   }, [tasks]);
@@ -52,7 +52,7 @@ export default function Home() {
   }, [initialGoals]);
 
   useEffect(() => {
-    const dateScoreMap = new Map<string, number>();
+    const dateScoreMap = new Map<string, Task[]>();
     completedTasks.forEach((task) => {
       if (task.finished) {
         // Convert the finished date to a Date object
@@ -60,8 +60,9 @@ export default function Home() {
         // Convert to UTC string in 'YYYY-MM-DD' format for consistent key usage
         const utcDateString = localDate.toISOString().split('T')[0];
         // Use this string as the map key
-        const score = dateScoreMap.get(utcDateString) || 0;
-        dateScoreMap.set(utcDateString, score + Number(task.timeChunksRequired));
+        const scoreList = dateScoreMap.get(utcDateString) || [];
+        const updatedScoreList = [...scoreList, task];
+        dateScoreMap.set(utcDateString, updatedScoreList);
       }
     });
     setDateScoreMap(dateScoreMap);
@@ -255,10 +256,7 @@ export default function Home() {
   }
 
   const onClickDay = (value: Date) => {
-    console.log('value:', value, value.toISOString().split('T')[0]);
-    console.log(dateScoreMap.get(value.toISOString().split('T')[0]));
-    console.log(dateScoreMap);
-    console.log('---------\n')
+
   }
 
   const tileContent = ({ date, view }: { date: Date, view: string }) => {
@@ -269,16 +267,14 @@ export default function Home() {
       }
       const utcDateString = date.toISOString().split('T')[0];
       const score = dateScoreMap.get(utcDateString);
-      return <Square value={score ? score.toString() : '0'} />;
+      return <Square value={score ? score.length.toString() : '0'} />;
     }
   }
 
   const calendarLabel = ({ date, view }: { date: Date, view: string }) => {
     return (
-      <Button label={date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} onAction={() => {
-        setToday(new Date(date));
-      }} type="default" />
-    );
+      <span>{date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+    )
 
   }
 
@@ -292,11 +288,10 @@ export default function Home() {
       maxDetail="month"
       next2Label={null}
       prev2Label={null}
-      nextLabel={<Button label=">" onAction={() => { }} />}
-      prevLabel={<Button label="<" onAction={() => { }} />}
+      nextLabel={'>'}
+      prevLabel={'<'}
       navigationLabel={calendarLabel}
       maxDate={new Date()}
-      onViewChange={(view) => console.log(view)}
     />)
   }
 

@@ -236,8 +236,12 @@ div {
 
 .react-calendar__navigation__arrow,
 .react-calendar__navigation__label {
-  background-color: unset;
+  background-color: var(--defaultColor);
   border: none;
+  color: var(--textColor);
+  margin: 0 5px;
+  padding: 10px 15px;
+  font-weight: bold;
 }
 
 .react-calendar__navigation__arrow:disabled {
