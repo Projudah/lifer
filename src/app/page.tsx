@@ -20,9 +20,10 @@ function Square({ value }: { value: string }) {
 
   function interpolateColor(value: number) {
     // Ensure the value is clamped between 1 and 50
-    const clampedValue = Math.max(1, Math.min(value, 50));
+    const max = 30;
+    const clampedValue = Math.max(1, Math.min(value, max));
     // Convert the value to a scale between 0 and 1 for chroma
-    const scaleValue = clampedValue / 50;
+    const scaleValue = clampedValue / max;
 
     // Define the colors to interpolate between
     const colors = ['#a33c3c', '#eba328', '#0f7136']; // Red, Green, Blue

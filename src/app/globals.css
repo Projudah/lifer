@@ -203,6 +203,7 @@ div {
   padding: 10px 0px;
   width: 15px;
   border-radius: 10px;
+  font-weight: bold;
 }
 
 .square {
@@ -212,7 +213,8 @@ div {
   margin: 5px;
   padding: 5px 0px;
   border-radius: 10px;
-  color: var(--secondary);
+  color: lightgray;
+  font-weight: lighter;
 }
 
 .today {
