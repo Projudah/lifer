@@ -12,13 +12,25 @@ import TaskModal from "./components/Task/TaskModal";
 import Modal from "./components/Modal";
 import { ProgressBar } from "./components/Goal/Goal";
 import Calendar from "react-calendar";
+import chroma from 'chroma-js';
+
 
 function Square({ value }: { value: string }) {
-  // a function that takes value, from 0-8 interpolate between red #a33c3c to green #0f7136
+
+
   function interpolateColor(value: number) {
-    const red = 163 - (value * 20);
-    const green = 55 + (value * 20);
-    return `rgb(${red}, ${green}, 54)`;
+    // Ensure the value is clamped between 1 and 50
+    const clampedValue = Math.max(1, Math.min(value, 50));
+    // Convert the value to a scale between 0 and 1 for chroma
+    const scaleValue = clampedValue / 50;
+
+    // Define the colors to interpolate between
+    const colors = ['#a33c3c', '#eba328', '#0f7136']; // Red, Green, Blue
+
+    // Use chroma to interpolate between the colors
+    const color = chroma.scale(colors)(scaleValue).hex();
+
+    return color;
   }
 
   return (
@@ -280,6 +292,7 @@ export default function Home() {
 
   const renderCalendar = () => {
     return (<Calendar
+      className="calendar-container"
       value={today}
       tileClassName={tileClassName}
       onClickDay={onClickDay}
