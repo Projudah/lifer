@@ -226,6 +226,8 @@ div {
   color: var(--textColor);
   text-decoration: none;
   width: 15px;
+  text-align: center;
+  font-size: medium;
 }
 
 .react-calendar__month-view__weekdays__weekday abbr {
