@@ -13,6 +13,7 @@ import Modal from "./components/Modal";
 import { ProgressBar } from "./components/Goal/Goal";
 import Calendar from "react-calendar";
 import chroma from 'chroma-js';
+import AIModal from "./components/Goal/AIModal";
 
 
 function Square({ value }: { value: string }) {
@@ -251,6 +252,8 @@ export default function Home() {
         return <Modal title="Response" open onClose={handleConfirm} >{response}</Modal>
       case 'loading':
         return <Modal title="Loading..." open onClose={() => { }} ><ProgressBar progress={progress} />{progress}%</Modal>
+      case 'aimodal':
+        return <AIModal open onClose={() => setModalState(undefined)} />
       default:
         return null;
     }
@@ -317,6 +320,7 @@ export default function Home() {
         <Button label="Add Task" onAction={handleOpenTaskModal} />
         <Button label="Use" onAction={handleUse} type="use" />
         <Button label="Earn" onAction={handleEarn} type="earn" />
+        <Button label="Assistant" onAction={() => setModalState('aimodal')} />
       </Layout>
       <Layout>
         <div className="spacer"></div>
