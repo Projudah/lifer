@@ -317,7 +317,6 @@ export default function Home() {
       <Layout className="Fixed" horizontal>
         {pointsMarkup}
         <Button label="Add Goal" onAction={handleOpenGoalModal} />
-        <Button label="Add Task" onAction={handleOpenTaskModal} />
         <Button label="Use" onAction={handleUse} type="use" />
         <Button label="Earn" onAction={handleEarn} type="earn" />
         <Button label="Assistant" onAction={() => setModalState('aimodal')} />

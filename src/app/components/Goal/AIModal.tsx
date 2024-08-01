@@ -37,6 +37,7 @@ export default function AIModal({ open, onClose, onSubmit }: Props) {
             setIsCompleted(true);
             setLoading(false);
         } else {
+            setResponse(data.status);
             setTimeout(() => checkStatus(runId, threadId), 3000); // Poll every 5 seconds
 
         }
@@ -125,11 +126,7 @@ export default function AIModal({ open, onClose, onSubmit }: Props) {
             </Layout>
             <Layout>
                 <label>Response</label>
-                <textarea
-                    className="jsonTextArea"
-                    value={response}
-                    readOnly
-                />
+                <div className="responseArea">{response}</div>
             </Layout>
         </Modal>
     )
