@@ -21,7 +21,7 @@ function Square({ value }: { value: string }) {
 
   function interpolateColor(value: number) {
     // Ensure the value is clamped between 1 and 50
-    const max = 30;
+    const max = 20;
     const clampedValue = Math.max(1, Math.min(value, max));
     // Convert the value to a scale between 0 and 1 for chroma
     const scaleValue = clampedValue / max;
@@ -253,7 +253,7 @@ export default function Home() {
       case 'loading':
         return <Modal title="Loading..." open onClose={() => { }} ><ProgressBar progress={progress} />{progress}%</Modal>
       case 'aimodal':
-        return <AIModal open onClose={() => setModalState(undefined)} />
+        return <AIModal open onClose={() => setModalState(undefined)} onSubmit={handleNewGoal} />
       default:
         return null;
     }
