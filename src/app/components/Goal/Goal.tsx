@@ -20,6 +20,7 @@ export default function Goal({ name, steps }: GoalType) {
     const [dialogState, setDialogState] = useState<string>();
     const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined);
     const { tasks, fetchAll } = useContext(DataContext);
+    const [progress, setProgress] = useState(0);
 
     const toggleSteps = () => {
         setExpanded(!expanded);
@@ -60,6 +61,33 @@ export default function Goal({ name, steps }: GoalType) {
         }
         setDialogState('success');
         // update points
+    };
+
+    const completeAllTasks = async () => {
+        setDialogState('loadingCompleteAll');
+        const goalTasks = Object.values(steps).flatMap(step => step.tasks.map(task => task.id));
+        for (const taskId of goalTasks) {
+            if (!taskId) continue;
+            if (tasks[taskId]?.status === "ARCHIVED") {
+                setProgress(progress + 1);
+                continue;
+            };
+            const res = await fetch('earn/api', {
+                method: 'POST',
+                body: JSON.stringify({ id: taskId }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!res.ok) {
+                setDialogState('error');
+                const error = await res.json();
+                setError(error.message);
+                return;
+            }
+            setProgress(progress + 1);
+        }
+        setDialogState('success');
     };
 
     const generateStep = (step: Step) => {
@@ -117,6 +145,9 @@ export default function Goal({ name, steps }: GoalType) {
         setDialogState('confirmDelete');
     }
 
+    const confirmCompleteAll = () => {
+        setDialogState('confirmCompleteAll');
+    }
     const handleDeleteGoal = () => {
         const res = fetch("api/goals", {
             method: "DELETE",
@@ -153,10 +184,14 @@ export default function Goal({ name, steps }: GoalType) {
                 return <Modal open={true} title="Delete Goal" onClose={() => { setDialogState(undefined) }} secondaryAction={{ label: "Yes", onAction: handleDeleteGoal }}><p>Are you sure you want to delete this goal?</p></Modal>
             case "confimComplete":
                 return <Modal open={true} title="Complete Task" onClose={() => { setDialogState(undefined) }} secondaryAction={{ label: "Yes", onAction: completeTask }}><p>Complete task {selectedTask?.title}?</p></Modal>
+            case "confirmCompleteAll":
+                return <Modal open={true} title="Complete All Tasks" onClose={() => { setDialogState(undefined) }} secondaryAction={{ label: "Yes", onAction: completeAllTasks }}><p>Are you sure you want to complete all tasks?</p></Modal>
             case "success":
                 return <Modal open={true} title="Success" onClose={handleCloseConfirmModal}><p>{'Task completed successfully (Points not yet updated)'}</p></Modal>
             case "loading":
                 return <Modal open={true} title="Loading" onClose={() => { }}><p>Loading...</p></Modal>
+            case "loadingCompleteAll":
+                return <Modal title="Loading..." open onClose={() => { }} ><ProgressBar progress={progress} />{progress}%</Modal>
             default:
                 return null;
 
@@ -175,7 +210,10 @@ export default function Goal({ name, steps }: GoalType) {
                                 return generateStep(steps[Number(stepId)]);
                             })}
                         </Layout>
-                        <Button onAction={handleEditGoal} label="Edit" />
+                        <Layout horizontal>
+                            <Button onAction={handleEditGoal} label="Edit" />
+                            <Button onAction={confirmCompleteAll} label="Mark all complete" />
+                        </Layout>
                     </div>
                 }
             </Layout>
