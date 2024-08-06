@@ -77,22 +77,20 @@ export default function Goal({ name, steps }: GoalType) {
 
                 continue;
             };
-            // const res = await fetch('earn/api', {
-            //     method: 'POST',
-            //     body: JSON.stringify({ id: taskId }),
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            // });
-            // if (!res.ok) {
-            //     setDialogState('error');
-            //     const error = await res.json();
-            //     setError(error.message);
-            //     return;
-            // }
+            const res = await fetch('earn/api', {
+                method: 'POST',
+                body: JSON.stringify({ id: taskId }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!res.ok) {
+                setDialogState('error');
+                const error = await res.json();
+                setError(error.message);
+                return;
+            }
 
-            // arbitrarilly wait 1 second
-            await new Promise(resolve => setTimeout(resolve, 1000));
             currentProgress++;
             const progressPercentage = Math.round((currentProgress / totalTasks) * 100);
         }
