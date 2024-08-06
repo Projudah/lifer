@@ -66,26 +66,35 @@ export default function Goal({ name, steps }: GoalType) {
     const completeAllTasks = async () => {
         setDialogState('loadingCompleteAll');
         const goalTasks = Object.values(steps).flatMap(step => step.tasks.map(task => task.id));
+        const totalTasks = goalTasks.length;
+        let currentProgress = 0;
         for (const taskId of goalTasks) {
             if (!taskId) continue;
             if (tasks[taskId]?.status === "ARCHIVED") {
-                setProgress(progress + 1);
+                currentProgress++;
+                const progressPercentage = Math.round((currentProgress / totalTasks) * 100);
+                setProgress(progressPercentage);
+
                 continue;
             };
-            const res = await fetch('earn/api', {
-                method: 'POST',
-                body: JSON.stringify({ id: taskId }),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (!res.ok) {
-                setDialogState('error');
-                const error = await res.json();
-                setError(error.message);
-                return;
-            }
-            setProgress(progress + 1);
+            // const res = await fetch('earn/api', {
+            //     method: 'POST',
+            //     body: JSON.stringify({ id: taskId }),
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            // });
+            // if (!res.ok) {
+            //     setDialogState('error');
+            //     const error = await res.json();
+            //     setError(error.message);
+            //     return;
+            // }
+
+            // arbitrarilly wait 1 second
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            currentProgress++;
+            const progressPercentage = Math.round((currentProgress / totalTasks) * 100);
         }
         setDialogState('success');
     };
