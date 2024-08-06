@@ -221,8 +221,10 @@ div {
 }
 
 .today {
-  border: 3px solid var(--white);
   font-weight: bold;
+  border: none;
+  box-shadow: 0 0 10px var(--useColor);
+  z-index: 1;
 }
 
 .react-calendar__month-view__weekdays__weekday {
