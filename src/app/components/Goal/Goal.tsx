@@ -93,6 +93,8 @@ export default function Goal({ name, steps }: GoalType) {
 
             currentProgress++;
             const progressPercentage = Math.round((currentProgress / totalTasks) * 100);
+            setProgress(progressPercentage);
+
         }
         setDialogState('success');
     };
