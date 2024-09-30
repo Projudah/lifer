@@ -31,7 +31,7 @@ function interpolateColor(value: number) {
   return color;
 }
 
-function Square({ value }: { value: string }) {
+function Square({ value }: { value: number }) {
 
   return (
     <div className="square" style={{ backgroundColor: interpolateColor(Number(value)) }}>
@@ -51,7 +51,7 @@ export default function Home() {
   const [response, setResponse] = useState<string>();
   const [progress, setProgress] = useState<number>(0);
   const [today, setToday] = useState<Date>(new Date());
-  const [dateScoreMap, setDateScoreMap] = useState<Map<string, Task[]>>(new Map());
+  const [dateScoreMap, setDateScoreMap] = useState<Map<string, number>>(new Map());
   const completedTasks = useMemo(() => {
     return Object.values(tasks).filter((task: Task) => task.status === "COMPLETE" || task.status === "ARCHIVED");
   }, [tasks]);
@@ -64,20 +64,37 @@ export default function Home() {
   }, [initialGoals]);
 
   useEffect(() => {
-    const dateScoreMap = new Map<string, Task[]>();
+    const scoreMap = new Map<string, number>();
+
     completedTasks.forEach((task) => {
       if (task.finished) {
-        // Convert the finished date to a Date object
-        const localDate = new Date(task.finished);
-        // Convert to UTC string in 'YYYY-MM-DD' format for consistent key usage
-        const utcDateString = localDate.toISOString().split('T')[0];
-        // Use this string as the map key
-        const scoreList = dateScoreMap.get(utcDateString) || [];
-        const updatedScoreList = [...scoreList, task];
-        dateScoreMap.set(utcDateString, updatedScoreList);
+        // Parse the task's finished date as a UTC date
+        const utcDate = new Date(task.finished);
+        const utcDateString = utcDate.toISOString().split('T')[0];
+        const timeChunksRequired = Number(task.timeChunksRequired);
+        const score = scoreMap.get(utcDateString) || 0;
+        const updatedScore = score + timeChunksRequired;
+        scoreMap.set(utcDateString, parseFloat(updatedScore.toFixed(1)));
+
+        // Apply constant rate of decay
+        let remainingScore = timeChunksRequired;
+        let dayOffset = 1;
+        const decayRate = 0.5; // Adjust the decay rate as needed
+
+        while (remainingScore > 0) {
+          const falloffDate = new Date(utcDate);
+          falloffDate.setUTCDate(falloffDate.getUTCDate() + dayOffset); // Use setUTCDate to manipulate the date in UTC
+          const falloffDateString = falloffDate.toISOString().split('T')[0];
+          const falloffScore = scoreMap.get(falloffDateString) || 0;
+          remainingScore -= decayRate;
+          const falloffExtraScore = Math.max(remainingScore, 0); // Ensure score does not go below 0
+          scoreMap.set(falloffDateString, parseFloat((falloffScore + falloffExtraScore).toFixed(1)));
+          dayOffset++;
+        }
       }
     });
-    setDateScoreMap(dateScoreMap);
+
+    setDateScoreMap(scoreMap);
   }, [completedTasks]);
 
 
@@ -88,7 +105,9 @@ export default function Home() {
   const goalsMarkup = goals && sortGoals(goals).map((goalObject) => {
     return <Goal key={goalObject.name} name={goalObject.name} steps={goalObject.steps} />;
   });
-  const pointsMarkup = <span><span className="pointsValue">{points ? points : 'loading'}</span> pts</span>
+  const pointsMarkup = <span><span className="pointsValue">{dateScoreMap ? dateScoreMap.get(
+    today.toISOString().split('T')[0]
+  ) : 'loading'}</span> pts</span>
 
   const handleEarn = () => router.push("/earn");
 
@@ -281,7 +300,7 @@ export default function Home() {
       }
       const utcDateString = date.toISOString().split('T')[0];
       const score = dateScoreMap.get(utcDateString);
-      return <Square value={score ? score.length.toString() : '0'} />;
+      return <Square value={score ? score : 0} />;
     }
   }
 
