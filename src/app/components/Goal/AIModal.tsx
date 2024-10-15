@@ -23,7 +23,7 @@ export default function AIModal({ open, onClose, onSubmit }: Props) {
     const [isCompleted, setIsCompleted] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
 
-    const handleGoalDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleGoalDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setGoalDescription(event.target.value);
     }
 
@@ -115,7 +115,7 @@ export default function AIModal({ open, onClose, onSubmit }: Props) {
         >
             <Layout>
                 <label>Describe goal</label>
-                <input type="text"
+                <textarea className="jsonTextArea"
                     value={goalDescription}
                     onChange={handleGoalDescriptionChange}
                 />
