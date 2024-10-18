@@ -14,10 +14,17 @@ import { ProgressBar } from "./components/Goal/Goal";
 import Calendar from "react-calendar";
 import chroma from 'chroma-js';
 import AIModal from "./components/Goal/AIModal";
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale } from 'chart.js';
+
+
+
+ChartJS.register(CategoryScale, TimeScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+
 
 function interpolateColor(value: number) {
   // Ensure the value is clamped between 1 and 50
-  const max = 20;
+  const max = 25;
   const clampedValue = Math.max(1, Math.min(value, max));
   // Convert the value to a scale between 0 and 1 for chroma
   const scaleValue = clampedValue / max;
@@ -52,6 +59,8 @@ export default function Home() {
   const [progress, setProgress] = useState<number>(0);
   const [today, setToday] = useState<Date>(new Date());
   const [dateScoreMap, setDateScoreMap] = useState<Map<string, number>>(new Map());
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+
   const completedTasks = useMemo(() => {
     return Object.values(tasks).filter((task: Task) => task.status === "COMPLETE" || task.status === "ARCHIVED");
   }, [tasks]);
@@ -71,7 +80,7 @@ export default function Home() {
         // Parse the task's finished date as a UTC date
         const utcDate = new Date(task.finished);
         const utcDateString = utcDate.toISOString().split('T')[0];
-        const timeChunksRequired = Number(task.timeChunksRequired);
+        const timeChunksRequired = Math.max(Number(task.timeChunksRequired), 1);
         const score = scoreMap.get(utcDateString) || 0;
         const updatedScore = score + timeChunksRequired;
         scoreMap.set(utcDateString, parseFloat(updatedScore.toFixed(1)));
@@ -79,7 +88,7 @@ export default function Home() {
         // Apply constant rate of decay
         let remainingScore = timeChunksRequired;
         let dayOffset = 1;
-        const decayRate = 0.5; // Adjust the decay rate as needed
+        const decayRate = 0.3; // Adjust the decay rate as needed
 
         while (remainingScore > 0) {
           const falloffDate = new Date(utcDate);
@@ -288,7 +297,21 @@ export default function Home() {
     return classNames;
   }
 
-  const onClickDay = (value: Date) => {
+  const onClickDay = (value: Date, _event: any) => {
+    //get the tasks completed on that day
+    const utcDateString = value.toISOString().split('T')[0];
+    const score = dateScoreMap.get(utcDateString);
+    console.log('score', score, 'date', utcDateString);
+
+    // if there are tasks completed on that day, in completedTasks, log them
+    const tasksCompletedOnDay = completedTasks.filter((task) => {
+      if (task.finished) {
+        const finishedDate = new Date(task.finished);
+        return finishedDate.toISOString().split('T')[0] === utcDateString;
+      }
+      return false;
+    });
+    console.log('tasksCompletedOnDay', tasksCompletedOnDay);
 
   }
 
@@ -329,6 +352,84 @@ export default function Home() {
     />)
   }
 
+  const renderGraph = () => {
+    // Convert dateScoreMap to an array of { date, score } objects
+    const dat = Array.from(dateScoreMap.entries()).map(([date, score]) => ({
+      date,
+      score,
+    }));
+
+    // Filter data points to show only the current month
+    const dataPoints = dat.filter(point => {
+      const pointDate = new Date(point.date);
+      const pointMonth = pointDate.getMonth();
+      const pointYear = pointDate.getFullYear();
+      const setMonth = currentMonth.getMonth();
+      const currentYear = currentMonth.getFullYear();
+      return pointMonth === setMonth && pointYear === currentYear;
+    });
+
+    // Sort the data points by date
+    dataPoints.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    // Prepare the data for the chart
+    const data = {
+      labels: dataPoints.map(point => point.date),
+      datasets: [
+        {
+          label: 'Score',
+          data: dataPoints.map(point => point.score),
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          fill: true,
+        },
+      ],
+    };
+
+    // Chart options
+    const options: any = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Scores Over Time',
+        },
+      },
+      scales: {
+        x: {
+          type: 'category',
+          title: {
+            display: true,
+            text: currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Score',
+          },
+        },
+      },
+    };
+
+    return <Line data={data} options={options} className="chart" style={{
+      height: "300px",
+    }} />;
+  };
+
+  const handlePreviousMonth = () => {
+    // without subMonths
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    // without addMonths
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+  };
+
   return (
     <>
       <Layout className="Fixed" horizontal>
@@ -341,6 +442,11 @@ export default function Home() {
       <Layout>
         <div className="spacer"></div>
         {renderCalendar()}
+        <div className="chart-navigation">
+          <Button onAction={handlePreviousMonth} label="Previous Month" />
+          <Button onAction={handleNextMonth} label="Next Month" />
+        </div>
+        {renderGraph()}
         <Layout>
           {goalsMarkup}
         </Layout>
