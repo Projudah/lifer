@@ -301,7 +301,7 @@ export default function Home() {
     //get the tasks completed on that day
     const utcDateString = value.toISOString().split('T')[0];
     const score = dateScoreMap.get(utcDateString);
-    console.log('score', score, 'date', utcDateString);
+    // console.log('score', score, 'date', utcDateString);
 
     // if there are tasks completed on that day, in completedTasks, log them
     const tasksCompletedOnDay = completedTasks.filter((task) => {
@@ -311,7 +311,7 @@ export default function Home() {
       }
       return false;
     });
-    console.log('tasksCompletedOnDay', tasksCompletedOnDay);
+    // console.log('tasksCompletedOnDay', tasksCompletedOnDay);
 
   }
 
@@ -364,9 +364,7 @@ export default function Home() {
       const pointDate = new Date(point.date);
       const pointMonth = pointDate.getMonth();
       const pointYear = pointDate.getFullYear();
-      const setMonth = currentMonth.getMonth();
-      const currentYear = currentMonth.getFullYear();
-      return pointMonth === setMonth && pointYear === currentYear;
+      return pointMonth === currentMonth.getMonth() && pointYear === currentMonth.getFullYear() && pointDate <= today;
     });
 
     // Sort the data points by date
