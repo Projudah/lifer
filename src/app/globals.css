@@ -139,7 +139,10 @@ div {
 }
 
 .LayoutChildFill {
-  flex: 5;
+  width: 100%;
+  max-height: 70vh;
+  display: flex;
+  justify-content: center;
 }
 
 .LayoutParentVertical {
@@ -280,4 +283,7 @@ div {
   max-height: 200px;
   font-size: small;
   overflow: scroll;
+}
+
+.chart {
 }

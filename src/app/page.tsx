@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Button from "./components/Button/Button";
-import Layout from "./components/Layout/Layout";
+import Layout, { LayoutItem } from "./components/Layout/Layout";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { DataContext } from "./dataContext";
 import Goal from "./components/Goal";
@@ -413,9 +413,7 @@ export default function Home() {
       },
     };
 
-    return <Line data={data} options={options} className="chart" style={{
-      height: "300px",
-    }} />;
+    return <Line data={data} options={options} className="chart" height={'70%'} width={'100%'} />;
   };
 
   const handlePreviousMonth = () => {
@@ -444,7 +442,9 @@ export default function Home() {
           <Button onAction={handlePreviousMonth} label="Previous Month" />
           <Button onAction={handleNextMonth} label="Next Month" />
         </div>
-        {renderGraph()}
+        <LayoutItem fill>
+          {renderGraph()}
+        </LayoutItem>
         <Layout>
           {goalsMarkup}
         </Layout>
