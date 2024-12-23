@@ -196,7 +196,7 @@ export default function Goal({ name, steps }: GoalType) {
             case "confirmCompleteAll":
                 return <Modal open={true} title="Complete All Tasks" onClose={() => { setDialogState(undefined) }} secondaryAction={{ label: "Yes", onAction: completeAllTasks }}><p>Are you sure you want to complete all tasks?</p></Modal>
             case "success":
-                return <Modal open={true} title="Success" onClose={handleCloseConfirmModal}><p>{'Task completed successfully (Points not yet updated)'}</p></Modal>
+                return <Modal open={true} title="Success" onClose={handleCloseConfirmModal}><p>{'Task completed successfully'}</p></Modal>
             case "loading":
                 return <Modal open={true} title="Loading" onClose={() => { }}><p>Loading...</p></Modal>
             case "loadingCompleteAll":
@@ -211,17 +211,18 @@ export default function Goal({ name, steps }: GoalType) {
             <ProgressBar progress={calculateProgress()} />
 
             <Layout className="goalContainer">
-                <p className="goalTitle" onClick={toggleSteps}>{name}</p>
+                <Layout horizontal center>
+                    <p className="goalTitle" onClick={toggleSteps}>{name}</p>
+                    <Button onAction={handleEditGoal} label="Edit" />
+                    <Button onAction={confirmCompleteAll} label="Mark all complete" />
+
+                </Layout>
                 {expanded &&
                     <div className="stepsContainer">
                         <Layout horizontal className="stepsLayout">
                             {steps && Object.keys(steps).map((stepId) => {
                                 return generateStep(steps[Number(stepId)]);
                             })}
-                        </Layout>
-                        <Layout horizontal>
-                            <Button onAction={handleEditGoal} label="Edit" />
-                            <Button onAction={confirmCompleteAll} label="Mark all complete" />
                         </Layout>
                     </div>
                 }

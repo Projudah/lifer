@@ -26,3 +26,10 @@
   background-color: var(--hoverColor);
   cursor: pointer;
 }
+
+@media (max-width: 600px) {
+  .Button {
+    padding: 5px 5px;
+    font-size: small;
+  }
+}

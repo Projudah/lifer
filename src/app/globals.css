@@ -64,16 +64,16 @@ select {
   color: var(--textColor);
   border: none;
   border-bottom: 1px solid var(--textColor);
+  height: 100px;
   padding: 10px 20px;
-  margin: 5px;
-  width: 400px;
-  height: 150px;
 }
 
 .goalContainer {
   background-color: var(--secondary);
-  width: 100vw;
+  min-width: 70vw;
   position: relative;
+  border-radius: 20px;
+  padding: 0px 10px;
 }
 
 .goalTitle {
@@ -168,6 +168,13 @@ div {
   align-content: center;
   height: 100%;
   grid-template-rows: auto;
+}
+
+.LayoutParentCenterHorizontal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
 .LayoutParentLeft {
@@ -285,5 +292,30 @@ div {
   overflow: scroll;
 }
 
-.chart {
+.carousel {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+label {
+}
+
+/* phones and below */
+@media (max-width: 600px) {
+  /* .LayoutParentHorizontal {
+    flex-direction: column;
+  } */
+
+  .goalTitle {
+    font-size: small;
+    padding: 10px 20px;
+  }
+
+  label {
+    font-size: small;
+  }
 }

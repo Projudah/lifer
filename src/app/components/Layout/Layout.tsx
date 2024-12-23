@@ -32,7 +32,8 @@ export default function Layout({ className, horizontal, center, left, twocolumn,
         {
             ["LayoutParentHorizontal"]: horizontal,
             ["LayoutParentVertical"]: !horizontal,
-            ["LayoutParentCenter"]: center,
+            ["LayoutParentCenter"]: center && !horizontal,
+            ["LayoutParentCenterHorizontal"]: center && horizontal,
             ["LayoutParentLeft"]: left,
             ["TwoColumn"]: twocolumn
         }

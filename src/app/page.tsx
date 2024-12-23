@@ -16,6 +16,7 @@ import chroma from 'chroma-js';
 import AIModal from "./components/Goal/AIModal";
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import Carousel from "./components/Carousel/Carousel";
 
 
 
@@ -203,6 +204,27 @@ export default function Home() {
     handleCloseGoalModal()
   };
 
+  const handleNewGoals = async (newGoals: GoalType[]) => {
+    const sanitizedGoals = newGoals.map(sanitizeGoal);
+    const updatedGoalsWithTasks = await Promise.all(sanitizedGoals.map(addAllTasksToCalendar));
+
+    const updatedGoals = updatedGoalsWithTasks.reduce((acc, goal) => {
+      acc[goal.name] = goal;
+      return acc;
+    }, { ...goals });
+
+    const res = await fetch("api/goals", {
+      method: "POST",
+      body: JSON.stringify(updatedGoals),
+    });
+
+    const response = await res.json();
+    if (response) {
+      setGoals(updatedGoals);
+    }
+    handleCloseGoalModal();
+  };
+
   const handleOpenTaskModal = () => setModalState("task");
 
   const handleCloseTaskModal = () => setModalState(undefined);
@@ -279,7 +301,7 @@ export default function Home() {
       case 'loading':
         return <Modal title="Loading..." open onClose={() => { }} ><ProgressBar progress={progress} />{progress}%</Modal>
       case 'aimodal':
-        return <AIModal open onClose={() => setModalState(undefined)} onSubmit={handleNewGoal} />
+        return <AIModal open onClose={() => setModalState(undefined)} onSubmit={handleNewGoals} />
       default:
         return null;
     }
@@ -446,7 +468,10 @@ export default function Home() {
           {renderGraph()}
         </LayoutItem>
         <Layout>
-          {goalsMarkup}
+          {/* {goalsMarkup} */}
+          <Carousel>
+            {goalsMarkup}
+          </Carousel>
         </Layout>
         {renderModal()}
       </Layout>
