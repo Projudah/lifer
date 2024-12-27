@@ -107,7 +107,8 @@ export default function AIModal({ open, onClose, onSubmit }: Props) {
         setResponses(goals.reduce((acc, _, index) => ({ ...acc, [index]: "Loading..." }), {}));
 
         try {
-            await Promise.all(goals.map(async (goal, index) => {
+            for (let index = 0; index < goals.length; index++) {
+                const goal = goals[index];
                 const bodyValue = `${goal.description} due: ${goal.dueDate} completed: ${goal.completed}`;
                 const response = await fetch("/api/assistant", {
                     method: "POST",
@@ -122,9 +123,8 @@ export default function AIModal({ open, onClose, onSubmit }: Props) {
                 }
 
                 const data = await response.json();
-                checkStatus(data.runId, data.threadId, index);
-            }));
-
+                await checkStatus(data.runId, data.threadId, index);
+            }
         } catch (error) {
             console.error(error);
             setResponses({ 0: "Failed to generate response" });

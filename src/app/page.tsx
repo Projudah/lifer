@@ -17,6 +17,7 @@ import AIModal from "./components/Goal/AIModal";
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import Carousel from "./components/Carousel/Carousel";
+import TaskView from "./components/Task/TaskView";
 
 
 
@@ -115,9 +116,16 @@ export default function Home() {
   const goalsMarkup = goals && sortGoals(goals).map((goalObject) => {
     return <Goal key={goalObject.name} name={goalObject.name} steps={goalObject.steps} />;
   });
+
   const pointsMarkup = <span><span className="pointsValue">{dateScoreMap ? dateScoreMap.get(
     today.toISOString().split('T')[0]
   ) : 'loading'}</span> pts</span>
+
+  // Give me a list of all tasks that are not completed as TaskView components
+  const tasksMarkup =
+    Object.values(tasks).filter((task: Task) => task.status !== "COMPLETE" && task.status !== "ARCHIVED").map((task: Task) => {
+      return <TaskView key={task.id} task={task} />;
+    });
 
   const handleEarn = () => router.push("/earn");
 
@@ -468,10 +476,10 @@ export default function Home() {
           {renderGraph()}
         </LayoutItem>
         <Layout>
-          {/* {goalsMarkup} */}
           <Carousel>
-            {goalsMarkup}
+            {tasksMarkup}
           </Carousel>
+          {goalsMarkup}
         </Layout>
         {renderModal()}
       </Layout>
