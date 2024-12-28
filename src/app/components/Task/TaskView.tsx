@@ -8,8 +8,8 @@ import Button from "../Button/Button";
 
 interface Props {
     task: Task;
-    viewGoal?: (goal: GoalType) => void;
-    skipGoal?: (goal: GoalType) => void;
+    viewGoal?: (goal: string) => void;
+    skipGoal: (goal: string) => void;
 }
 export default function TaskView({
     task,
@@ -19,6 +19,10 @@ export default function TaskView({
     const [dialogState, setDialogState] = useState<string>();
     const [error, setError] = useState<string>();
     const { tasks, fetchAll } = useContext(DataContext);
+    const [goalData] = useState<{
+        goal: string,
+        step: number
+    }>(JSON.parse(task.notes || '{}'));
 
 
     const completeTask = async () => {
@@ -71,9 +75,11 @@ export default function TaskView({
             <p>{task.title}</p>
             <Layout horizontal>
                 <p>{task.notes}</p>
-                <p>{task.status}</p>
             </Layout>
-            <Button label="Complete" onAction={() => setDialogState('confimComplete')} />
+            <Layout horizontal>
+                <Button label="Complete" onAction={() => setDialogState('confimComplete')} />
+                <Button label="Skip Goal" onAction={() => skipGoal(goalData.goal)} />
+            </Layout>
             {renderDialog()}
         </Layout>
     );

@@ -62,6 +62,7 @@ export default function Home() {
   const [today, setToday] = useState<Date>(new Date());
   const [dateScoreMap, setDateScoreMap] = useState<Map<string, number>>(new Map());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [seenTasks, setSeenTasks] = useState<{ [key: string]: boolean }>({});
 
   const completedTasks = useMemo(() => {
     return Object.values(tasks).filter((task: Task) => task.status === "COMPLETE" || task.status === "ARCHIVED");
@@ -120,12 +121,6 @@ export default function Home() {
   const pointsMarkup = <span><span className="pointsValue">{dateScoreMap ? dateScoreMap.get(
     today.toISOString().split('T')[0]
   ) : 'loading'}</span> pts</span>
-
-  // Give me a list of all tasks that are not completed as TaskView components
-  const tasksMarkup =
-    Object.values(tasks).filter((task: Task) => task.status !== "COMPLETE" && task.status !== "ARCHIVED").map((task: Task) => {
-      return <TaskView key={task.id} task={task} />;
-    });
 
   const handleEarn = () => router.push("/earn");
 
@@ -247,6 +242,32 @@ export default function Home() {
     setResponse(response.data?.message || 'success');
     setModalState('response');
   }
+
+  const markTaskAsSeen = (taskId: string) => {
+    setSeenTasks(prevSeenTasks => ({
+      ...prevSeenTasks,
+      [taskId]: true,
+    }));
+  };
+
+  const markTaskGoalAsSeen = (goalName: string) => {
+
+    console.log('marking goal as seen', goalName);
+    console.log(seenTasks)
+
+    const goal = goals[goalName];
+    if (goal) {
+      const newSeenTasks = { ...seenTasks };
+      goal.steps.forEach(step => {
+        step.tasks.forEach(task => {
+          if (task.id) {
+            newSeenTasks[task.id] = true;
+          }
+        });
+      });
+      setSeenTasks(newSeenTasks);
+    }
+  };
 
   const handleConfirm = () => {
     setModalState(undefined);
@@ -455,6 +476,15 @@ export default function Home() {
     // without addMonths
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
   };
+
+  // Give me a list of all tasks that are not completed as TaskView components
+  const tasksMarkup = useMemo(() => {
+    return Object.values(tasks)
+      .filter((task: Task) => task.status !== "COMPLETE" && task.status !== "ARCHIVED" && (task.id && !seenTasks[task.id]))
+      .map((task: Task) => {
+        return <TaskView key={task.id} task={task} skipGoal={markTaskGoalAsSeen} />;
+      });
+  }, [tasks, seenTasks]);
 
   return (
     <>
