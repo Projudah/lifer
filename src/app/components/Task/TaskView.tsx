@@ -71,7 +71,7 @@ export default function TaskView({
     }
 
     return (
-        <Layout>
+        <Layout className="goalContainer">
             <p>{task.title}</p>
             <Layout horizontal>
                 <p>{task.notes}</p>
