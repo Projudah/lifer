@@ -2,4 +2,9 @@ LIFER – AI Task Manager
 
 A web based AI application that intelligently breaks down goals into manageable tasks, automatically schedules them, and provides a clear visual roadmap for efficient productivity.
 
-![Screenshot_20240912-235400](https://github.com/user-attachments/assets/3716f40d-14c4-461b-8fd7-b1c6265d92d1)
+
+![Screenshot 2025-01-31 124625](https://github.com/user-attachments/assets/5549dadd-2c49-4bbb-b1e5-7b97d5b77b5d)
+
+
+https://github.com/user-attachments/assets/e7c104e5-e7db-4902-80ff-4938febca444
+
