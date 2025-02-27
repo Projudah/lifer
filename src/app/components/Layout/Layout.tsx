@@ -16,11 +16,11 @@ interface Props {
     children: React.ReactNode | React.ReactNode[];
 }
 
-function isLayoutItem(node: any) {
+function isLayoutItem(node: string | React.ReactNode) {
     if (typeof node === 'string') {
         return false
     }
-    return node ? node.type === LayoutItem : false;
+    return React.isValidElement(node) ? node.type === LayoutItem : false;
 }
 export default function Layout({ className, horizontal, center, left, twocolumn, children }: Props) {
     const LayoutItems = Array.isArray(children) ? children : [children]

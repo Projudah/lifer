@@ -76,7 +76,7 @@ export default function Goal({ name, steps }: GoalType) {
                 setProgress(progressPercentage);
 
                 continue;
-            };
+            }
             const res = await fetch('earn/api', {
                 method: 'POST',
                 body: JSON.stringify({ id: taskId }),
