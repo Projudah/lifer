@@ -31,7 +31,7 @@ function StepInput({ index, onChange, initialValue }: StepProps) {
 
     const [stepValue, setStepValue] = useState(initialValue || `New Step ${index}+1`);
 
-    const handleChange = (event: any) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setStepValue(value);
         onChange(value, index);

@@ -56,7 +56,7 @@ export default function RootLayout({
     tasksArray.forEach((task: Task) => {
       if (task.id) {
         tasksObject[task.id] = task;
-      };
+      }
     });
     setTasks(tasksObject);
   };

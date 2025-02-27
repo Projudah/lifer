@@ -1,9 +1,7 @@
 "use client"
-
-import { useRouter } from "next/navigation";
 import Button from "./components/Button/Button";
 import Layout, { LayoutItem } from "./components/Layout/Layout";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DataContext } from "./dataContext";
 import Goal from "./components/Goal";
 import GoalModal from "./components/Goal/GoalModal";
@@ -18,8 +16,6 @@ import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import Carousel from "./components/Carousel/Carousel";
 import TaskView from "./components/Task/TaskView";
-
-
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -52,21 +48,17 @@ function Square({ value }: { value: number }) {
 
 
 export default function Home() {
-  const router = useRouter();
-  const { points, goals: initialGoals, tasks } = useContext(DataContext);
+  const { goals: initialGoals, tasks } = useContext(DataContext);
   const [goals, setGoals] = useState<Goals>(initialGoals);
-  const [currentGoal, setCurrentGoal] = useState<GoalType | undefined>(undefined);
   const [modalState, setModalState] = useState<string>();
   const [response, setResponse] = useState<string>();
   const [progress, setProgress] = useState<number>(0);
-  const [today, setToday] = useState<Date>(new Date());
+  const [today] = useState<Date>(new Date());
   const [dateScoreMap, setDateScoreMap] = useState<Map<string, number>>(new Map());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [seenTasks, setSeenTasks] = useState<{ [key: string]: boolean }>({});
 
-  const completedTasks = useMemo(() => {
-    return Object.values(tasks).filter((task: Task) => task.status === "COMPLETE" || task.status === "ARCHIVED");
-  }, [tasks]);
+  const completedTasks = Object.values(tasks).filter((task: Task) => task.status === "COMPLETE" || task.status === "ARCHIVED");
 
 
   useEffect(() => {
@@ -122,9 +114,6 @@ export default function Home() {
     today.toISOString().split('T')[0]
   ) : 'loading'}</span> pts</span>
 
-  const handleEarn = () => router.push("/earn");
-
-  const handleUse = () => router.push("/use");
 
   const handleCloseGoalModal = () => setModalState(undefined);
 
@@ -228,8 +217,6 @@ export default function Home() {
     handleCloseGoalModal();
   };
 
-  const handleOpenTaskModal = () => setModalState("task");
-
   const handleCloseTaskModal = () => setModalState(undefined);
 
   const handleAddTask = async (task: Task) => {
@@ -243,17 +230,7 @@ export default function Home() {
     setModalState('response');
   }
 
-  const markTaskAsSeen = (taskId: string) => {
-    setSeenTasks(prevSeenTasks => ({
-      ...prevSeenTasks,
-      [taskId]: true,
-    }));
-  };
-
   const markTaskGoalAsSeen = (goalName: string) => {
-
-    console.log('marking goal as seen', goalName);
-    console.log(seenTasks)
 
     const goal = goals[goalName];
     if (goal) {
@@ -278,7 +255,7 @@ export default function Home() {
   const addAllTasksToCalendar = async (goal: GoalType) => {
     setModalState('loading');
     setProgress(0);
-    let updatedGoal = JSON.parse(JSON.stringify(goal)); // Deep copy to avoid mutation
+    const updatedGoal = JSON.parse(JSON.stringify(goal)); // Deep copy to avoid mutation
     let totalTasks = 0;
     let processedTasks = 0;
 
@@ -322,7 +299,7 @@ export default function Home() {
   const renderModal = () => {
     switch (modalState) {
       case "goal":
-        return <GoalModal goal={currentGoal} open onClose={handleCloseGoalModal} onSubmit={handleNewGoal} />
+        return <GoalModal open onClose={handleCloseGoalModal} onSubmit={handleNewGoal} />
       case "task":
         return <TaskModal open onClose={handleCloseTaskModal} onSubmit={handleAddTask} />
       case 'response':
@@ -346,24 +323,6 @@ export default function Home() {
       }
     }
     return classNames;
-  }
-
-  const onClickDay = (value: Date, _event: any) => {
-    //get the tasks completed on that day
-    const utcDateString = value.toISOString().split('T')[0];
-    const score = dateScoreMap.get(utcDateString);
-    // console.log('score', score, 'date', utcDateString);
-
-    // if there are tasks completed on that day, in completedTasks, log them
-    const tasksCompletedOnDay = completedTasks.filter((task) => {
-      if (task.finished) {
-        const finishedDate = new Date(task.finished);
-        return finishedDate.toISOString().split('T')[0] === utcDateString;
-      }
-      return false;
-    });
-    // console.log('tasksCompletedOnDay', tasksCompletedOnDay);
-
   }
 
   const tileContent = ({ date, view }: { date: Date, view: string }) => {
@@ -390,7 +349,6 @@ export default function Home() {
       className="calendar-container"
       value={today}
       tileClassName={tileClassName}
-      onClickDay={onClickDay}
       tileContent={tileContent}
       minDetail="month"
       maxDetail="month"
@@ -436,11 +394,11 @@ export default function Home() {
     };
 
     // Chart options
-    const options: any = {
+    const options = {
       responsive: true,
       plugins: {
         legend: {
-          position: 'top',
+          position: 'top' as const,
         },
         title: {
           display: true,
@@ -449,7 +407,7 @@ export default function Home() {
       },
       scales: {
         x: {
-          type: 'category',
+          type: 'category' as const,
           title: {
             display: true,
             text: currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
@@ -478,21 +436,17 @@ export default function Home() {
   };
 
   // Give me a list of all tasks that are not completed as TaskView components
-  const tasksMarkup = useMemo(() => {
-    return Object.values(tasks)
-      .filter((task: Task) => task.status !== "COMPLETE" && task.status !== "ARCHIVED" && (task.id && !seenTasks[task.id]))
-      .map((task: Task) => {
-        return <TaskView key={task.id} task={task} skipGoal={markTaskGoalAsSeen} />;
-      });
-  }, [tasks, seenTasks]);
+  const tasksMarkup = Object.values(tasks)
+    .filter((task: Task) => task.status !== "COMPLETE" && task.status !== "ARCHIVED" && (task.id && !seenTasks[task.id]))
+    .map((task: Task) => {
+      return <TaskView key={task.id} task={task} skipGoal={markTaskGoalAsSeen} />;
+    });
 
   return (
     <>
       <Layout className="Fixed" horizontal>
         {pointsMarkup}
         <Button label="Add Goal" onAction={handleOpenGoalModal} />
-        <Button label="Use" onAction={handleUse} type="use" />
-        <Button label="Earn" onAction={handleEarn} type="earn" />
         <Button label="Assistant" onAction={() => setModalState('aimodal')} />
       </Layout>
       <Layout>
